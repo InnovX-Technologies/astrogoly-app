@@ -1,0 +1,342 @@
+.kundli-page {
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.kundli-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+}
+
+.kundli-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.form-group label {
+    color: #a0a0b0;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
+}
+
+/* Result Container */
+.result-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.result-header {
+    width: 100%;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.result-details {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    color: var(--accent);
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Tabs Navigation */
+.kundli-tabs {
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px;
+    border-radius: 12px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: #a0a0b0;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    /* Gold/Purple */
+    color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Chart Section */
+.chart-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.chart-toggles {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.toggle-btn {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a0a0b0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: var(--accent);
+    /* Accent Color */
+    color: #000;
+    /* Dark text on bright accent */
+    font-weight: bold;
+    border-color: var(--accent);
+}
+
+.chart-wrapper {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.chart-svg {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2));
+}
+
+/* Basic Details */
+.basic-details {
+    width: 100%;
+    padding: 2rem;
+}
+
+.basic-details h3 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.detail-row span {
+    color: #a0a0b0;
+}
+
+.detail-row strong {
+    color: white;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 1.5rem 0;
+}
+
+/* Planets Table */
+.predictions {
+    width: 100%;
+    padding: 2rem;
+}
+
+.predictions h3 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+.planet-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.planet-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1.5fr;
+    /* Planet, Rashi, Degree, Nakshatra */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+}
+
+.planet-row.header {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: bold;
+    color: #ffd700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.planet-row span {
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Utilities */
+.w-100 {
+    width: 100%;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: var(--accent);
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Dosha Section */
+.dosha-section {
+    width: 100%;
+    padding: 2rem;
+}
+
+.dosha-section h3 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.dosha-result {
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dosha-result.negative {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.dosha-result.positive {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: rgba(0, 255, 0, 0.3);
+}
+
+.status-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.desc-text {
+    color: #ffd700;
+    margin-bottom: 1rem;
+}
+
+.factors-list {
+    list-style: none;
+    padding: 0;
+}
+
+.factors-list li {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    color: #ffcccc;
+    font-size: 0.9rem;
+}

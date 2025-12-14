@@ -1,0 +1,259 @@
+.chat-page {
+    padding-top: 100px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+.astrologer-list-view {
+    width: 100%;
+    max-width: 800px;
+}
+
+.chat-header-main {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.astrologer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.expert-card {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s;
+}
+
+.expert-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.expert-avatar {
+    font-size: 2.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.expert-info {
+    flex: 1;
+}
+
+.expert-info h3 {
+    font-size: 1.1rem;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.specialty {
+    font-size: 0.85rem;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.expert-stats {
+    font-size: 0.8rem;
+    color: #a0a0b0;
+    display: flex;
+    gap: 8px;
+}
+
+.btn-primary-sm {
+    background: var(--primary);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary-sm:hover {
+    background: #7b2cbf;
+}
+
+
+/* Chat Interface */
+.chat-interface {
+    width: 100%;
+    max-width: 500px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-window-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.back-btn {
+    background: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.chat-expert-profile {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar-sm {
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-expert-profile h4 {
+    font-size: 1rem;
+    color: white;
+}
+
+.online-status {
+    font-size: 0.75rem;
+    color: #4caf50;
+    display: block;
+}
+
+.menu-btn {
+    background: none;
+    color: #a0a0b0;
+    cursor: pointer;
+}
+
+.messages-area {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+.message-bubble.them {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom-left-radius: 2px;
+    color: white;
+}
+
+.message-bubble.me {
+    align-self: flex-end;
+    background: var(--primary);
+    border-bottom-right-radius: 2px;
+    color: white;
+}
+
+.typing span {
+    animation: bounce 1.4s infinite ease-in-out both;
+    margin: 0 2px;
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+}
+
+.typing span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+.chat-input-area {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    color: white;
+}
+
+.chat-input-area input:focus {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+}
+
+.send-btn,
+.action-btn {
+    background: none;
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.send-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.send-btn:hover {
+    background: #7b2cbf;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
