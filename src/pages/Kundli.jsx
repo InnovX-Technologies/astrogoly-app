@@ -242,16 +242,125 @@ const Kundli = () => {
                 mangalDosha.factors.push(`Mars in House ${marsHouseLagna} from Lagna`);
             }
         }
-        // Check from Moon (Chandra Lagna)
-        if (marsSign && moonSign) {
-            const marsHouseMoon = (marsSign - moonSign + 12) % 12 + 1;
-            if ([1, 2, 4, 7, 8, 12].includes(marsHouseMoon)) {
-                mangalDosha.present = true;
-                mangalDosha.factors.push(`Mars in House ${marsHouseMoon} from Moon`);
+        // ... Dosha Analysis from previous step ...
+
+        // 4. Vimshottari Dasha Calculation
+        let dashas = [];
+        const moonObj = planetSigns['Moon'];
+        if (moonObj) {
+            const moonLong = parseFloat(moonObj.fullDegree || moonObj.normDegree || moonObj.degree || 0);
+            let absMoonLong = moonLong;
+            if (moonLong < 30.5 && moonObj.sign) {
+                absMoonLong = (moonObj.sign - 1) * 30 + moonLong;
+            }
+
+            const dashaLords = [
+                { name: "Ketu", years: 7 }, { name: "Venus", years: 20 }, { name: "Sun", years: 6 },
+                { name: "Moon", years: 10 }, { name: "Mars", years: 7 }, { name: "Rahu", years: 18 },
+                { name: "Jupiter", years: 16 }, { name: "Saturn", years: 19 }, { name: "Mercury", years: 17 }
+            ];
+
+            // Nakshatra Index (0-26)
+            // Each Nakshatra is 13.3333 deg (800 minutes)
+            // Total Zodiac = 360 deg = 21600 minutes
+            const degPerNakshatra = 40 / 3; // 13.3333...
+            const nakshatraExactIndex = absMoonLong / degPerNakshatra;
+            const nakIndex = Math.floor(nakshatraExactIndex);
+            const fractionTraversed = nakshatraExactIndex - nakIndex;
+
+            // Identify Dasha Lord at Birth (Cycle is Ketuv, Ven, Sun, Mon, Mar, Rah, Jup, Sat, Mer)
+            // 27 Nakshatras map to 9 lords repeating 3 times.
+            // Ashwini (0) -> Ketu, Bharani (1) -> Venus ...
+            const dashaLordIndex = nakIndex % 9;
+            const startNode = dashaLords[dashaLordIndex];
+
+            // Balance of Dasha at birth
+            const balanceYears = startNode.years * (1 - fractionTraversed);
+
+            // Generate Sequence
+            let currentDate = new Date(formData.date); // birth date
+
+            // First Dasha (Balance)
+            currentDate.setFullYear(currentDate.getFullYear() + balanceYears); // approx
+            // More precise date add would be needed for real apps, simple year add for demo
+
+            dashas.push({
+                planet: startNode.name,
+                end: new Date(currentDate).toDateString(),
+                status: "Balance at Birth"
+            });
+
+            // Next 5 Dashas
+            for (let i = 1; i <= 8; i++) {
+                const idx = (dashaLordIndex + i) % 9;
+                const node = dashaLords[idx];
+                currentDate.setFullYear(currentDate.getFullYear() + node.years);
+                dashas.push({
+                    planet: node.name,
+                    end: new Date(currentDate).toDateString(),
+                    yearSpan: node.years
+                });
             }
         }
 
-        return { housePlanets, navamsaPlanets, ascSign, ascNavamsaSign, planetSigns, dosha: { mangal: mangalDosha } };
+        // 5. Yoga Analysis
+        const yogas = [];
+        const getHouse = (planet) => {
+            if (!planetSigns[planet]) return null;
+            return (planetSigns[planet].sign - ascSign + 12) % 12 + 1;
+        };
+
+        // Gajakesari: Jup in 1/4/7/10 from Moon
+        if (planetSigns['Jupiter'] && planetSigns['Moon']) {
+            const jupSign = planetSigns['Jupiter'].sign;
+            const moonSign = planetSigns['Moon'].sign;
+            const relPos = (jupSign - moonSign + 12) % 12 + 1;
+            if ([1, 4, 7, 10].includes(relPos)) {
+                yogas.push({ name: "Gajakesari Yoga", desc: "Jupiter in Kendra from Moon. Gives wealth, fame, and virtue." });
+            }
+        }
+
+        // Budhaditya: Sun + Mercury in same sign
+        if (planetSigns['Sun'] && planetSigns['Mercury']) {
+            if (planetSigns['Sun'].sign === planetSigns['Mercury'].sign) {
+                yogas.push({ name: "Budhaditya Yoga", desc: "Sun and Mercury conjunction. Gives intelligence." });
+            }
+        }
+
+        // Example: Lakshmi Yoga (9th Lord in Kendra/Trikona - simplified check)
+        // Need lordship map
+        const signLords = { 1: 'Mars', 2: 'Venus', 3: 'Mercury', 4: 'Moon', 5: 'Sun', 6: 'Mercury', 7: 'Venus', 8: 'Mars', 9: 'Jupiter', 10: 'Saturn', 11: 'Saturn', 12: 'Jupiter' };
+        // 9th house sign
+        const ninthSign = (ascSign + 8) % 12 + 1;
+        const ninthLord = signLords[ninthSign];
+        if (ninthLord && planetSigns[ninthLord]) {
+            const lordHouse = getHouse(ninthLord);
+            if ([1, 4, 7, 10, 5, 9].includes(lordHouse)) {
+                // Make sure lord is strong (not 6, 8, 12 sign logic omitted for brevity)
+                yogas.push({ name: "Lakshmi Yoga", desc: "Lord of 9th house in Kendra or Trikona. Indicates wealth and fortune." });
+            }
+        }
+
+        // 6. Gemstones (Based on Lagna Lord, 5th Lord, 9th Lord)
+        const gemMap = {
+            'Sun': 'Ruby', 'Moon': 'Pearl', 'Mars': 'Red Coral', 'Mercury': 'Emerald',
+            'Jupiter': 'Yellow Sapphire', 'Venus': 'Diamond', 'Saturn': 'Blue Sapphire'
+        };
+        const beneficialLords = [
+            signLords[ascSign], // Lagna Lord
+            signLords[(ascSign + 4) % 12 + 1], // 5th Lord
+            signLords[(ascSign + 8) % 12 + 1]  // 9th Lord
+        ];
+        const uniqueLords = [...new Set(beneficialLords)];
+        const gemstones = uniqueLords.map(l => ({ planet: l, gem: gemMap[l] })).filter(x => x.gem);
+
+        return {
+            housePlanets, navamsaPlanets, ascSign, ascNavamsaSign, planetSigns,
+            dosha: { mangal: mangalDosha },
+            dashas,
+            yogas,
+            gemstones
+        };
     };
 
     const handleSubmit = async (e) => {
@@ -353,7 +462,7 @@ const Kundli = () => {
 
                     {/* Tabs */}
                     <div className="kundli-tabs">
-                        {['Basic', 'Charts', 'Planets', 'Doshas'].map(tab => (
+                        {['Basic', 'Charts', 'Planets', 'Doshas', 'Dashas', 'Report'].map(tab => (
                             <button
                                 key={tab}
                                 className={`tab-btn ${activeTab === tab.toLowerCase() ? 'active' : ''}`}
@@ -443,6 +552,57 @@ const Kundli = () => {
                                     <p className="desc-text">Mars is well placed in your chart regarding Mangal Dosha rules.</p>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* Dashas Tab */}
+                    {activeTab === 'dashas' && (
+                        <div className="dasha-section glass-panel fade-in">
+                            <h3>Vimshottari Dasha (Mahadasha)</h3>
+                            <div className="dasha-list">
+                                {chartData.dashas && chartData.dashas.map((d, i) => (
+                                    <div key={i} className="dasha-row">
+                                        <div className="dasha-planet">
+                                            <span className="planet-icon"></span>
+                                            <strong>{d.planet}</strong>
+                                        </div>
+                                        <div className="dasha-time">
+                                            <span>Ends: {d.end}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Report Tab */}
+                    {activeTab === 'report' && (
+                        <div className="report-section glass-panel fade-in">
+                            <h3>Yoga Analysis</h3>
+                            {chartData.yogas && chartData.yogas.length > 0 ? (
+                                <div className="yoga-list">
+                                    {chartData.yogas.map((y, i) => (
+                                        <div key={i} className="yoga-card">
+                                            <h4>{y.name}</h4>
+                                            <p>{y.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No major common yogas detected in this simplified analysis.</p>
+                            )}
+
+                            <hr className="divider" />
+
+                            <h3>Gemstone Suggestions</h3>
+                            <div className="gemstone-list">
+                                {chartData.gemstones && chartData.gemstones.map((g, i) => (
+                                    <div key={i} className="gem-card">
+                                        <div className="gem-planet">For {g.planet}</div>
+                                        <div className="gem-name">{g.gem}</div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
 
