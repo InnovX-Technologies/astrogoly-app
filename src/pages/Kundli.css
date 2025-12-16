@@ -340,3 +340,106 @@ input:focus {
     color: #ffcccc;
     font-size: 0.9rem;
 }
+
+/* Dasha Section */
+.dasha-section {
+    width: 100%;
+    padding: 2rem;
+}
+
+.dasha-section h3 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.dasha-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dasha-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dasha-planet strong {
+    color: white;
+    font-size: 1.1rem;
+}
+
+.dasha-time span {
+    color: #a0a0b0;
+    font-size: 0.9rem;
+}
+
+/* Report Section */
+.report-section {
+    width: 100%;
+    padding: 2rem;
+}
+
+.report-section h3 {
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+}
+
+.yoga-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.yoga-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.yoga-card h4 {
+    color: #ffd700;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.yoga-card p {
+    font-size: 0.85rem;
+    color: #ddd;
+    line-height: 1.4;
+}
+
+.gemstone-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.gem-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px 25px;
+    border-radius: 12px;
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+}
+
+.gem-planet {
+    font-size: 0.8rem;
+    color: #a0a0b0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.gem-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+}
