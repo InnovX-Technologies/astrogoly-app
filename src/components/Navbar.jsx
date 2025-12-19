@@ -30,7 +30,7 @@ const Navbar = () => {
             <div className="container nav-container">
                 <Link to="/" className="logo">
                     <Sparkles className="logo-icon" />
-                    <span>AstroGoly</span>
+                    <span>AstroMania</span>
                 </Link>
 
                 {/* Desktop Menu */}

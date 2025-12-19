@@ -9,7 +9,7 @@ const astrologers = [
 ];
 
 const mockMessages = [
-    { id: 1, sender: 'bot', text: 'Namaste! Welcome to AstroGoly. How can I guide you today?' },
+    { id: 1, sender: 'bot', text: 'Namaste! Welcome to AstroMania. How can I guide you today?' },
 ];
 
 const Chat = () => {

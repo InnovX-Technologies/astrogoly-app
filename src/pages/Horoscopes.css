@@ -1,154 +1,277 @@
 .horoscopes-page {
     padding-top: 100px;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
 }
 
 .horoscope-header {
     text-align: center;
-    margin-bottom: 3rem;
+    max-width: 800px;
 }
 
-.zodiac-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
-    padding-bottom: 4rem;
+.horoscope-header h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin-bottom: 1rem;
 }
 
-.zodiac-card {
+.horoscope-header p {
+    color: #a0a0b0;
+}
+
+/* Period Tabs */
+.period-tabs {
+    display: flex;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.period-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: #a0a0b0;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.period-btn.active {
+    background: white;
+    color: black;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Zodiac Grid (Horizontal/Grid hybrid) */
+.h-zodiac-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 1000px;
+}
+
+.h-zodiac-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    width: 100px;
+    height: 120px;
+    background: white;
+    color: #333;
+    border-radius: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s;
+    border: 2px solid transparent;
 }
 
-.zodiac-card:hover {
+.h-zodiac-card:hover {
     transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.12);
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
 }
 
-.zodiac-symbol {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #d0d0ff;
+.h-zodiac-card.active {
+    border-color: #000;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
 }
 
-.zodiac-card h3 {
+.h-zodiac-icon {
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
 
-.dates {
-    font-size: 0.85rem;
-    color: #a0a0b0;
+.h-zodiac-card span {
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* Date Display */
+.date-display h2 {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.5rem;
+    color: #ffd700;
+    font-style: italic;
+    margin: 1rem 0;
+}
+
+/* Day Tabs */
+.day-tabs {
+    display: flex;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.day-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 0.9rem;
+}
+
+.day-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.day-btn.active {
+    background: white;
+    color: black;
+    font-weight: bold;
+}
+
+/* Category Tabs */
+.category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.category-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    /* Pill shape */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #d0d0d0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.category-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.category-btn.active {
+    background: var(--accent, #ffd700);
+    color: black;
+    border-color: var(--accent, #ffd700);
+    font-weight: bold;
+}
+
+.cat-icon {
+    font-size: 1.1rem;
+}
+
+/* Prediction Content */
+.prediction-content {
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
+    max-width: 900px;
+    padding: 3rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 1rem;
+    gap: 2rem;
+    align-items: center;
+}
+
+.prediction-text {
+    flex: 2;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.info-row {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.info-row .label {
+    color: #ffd700;
+    /* Gold */
+    font-weight: bold;
+    margin-right: 8px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.info-row .value {
+    color: #e0e0e0;
+}
+
+.info-row.highlight .value {
+    font-style: italic;
+    color: white;
+}
+
+/* Luck Meter Circle */
+.luck-meter {
+    flex: 1;
+    min-width: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
-    animation: fadeIn 0.3s ease;
 }
 
-.modal-content {
-    width: 90%;
-    max-width: 500px;
-    padding: 2.5rem;
-    position: relative;
-    animation: slideUp 0.3s ease;
+.circular-chart {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    max-height: 250px;
+    width: 200px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 2.5;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke: var(--accent, #ffd700);
+    animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
+    }
+}
+
+.percentage {
+    fill: #ffd700;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 0.5em;
+    text-anchor: middle;
+}
+
+/* Animation */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(50px);
-        opacity: 0;
-    }
-
-    to {
         transform: translateY(0);
-        opacity: 1;
     }
-}
-
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    font-size: 2rem;
-    color: white;
-    line-height: 1;
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 1.5rem;
-}
-
-.zodiac-symbol-large {
-    font-size: 4rem;
-    color: var(--accent);
-}
-
-.element-badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    margin-top: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.lucky-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 1rem;
-    border-radius: 10px;
-}
-
-.lucky-stats div {
-    display: flex;
-    flex-direction: column;
-}
-
-.lucky-stats span {
-    font-size: 0.8rem;
-    color: #a0a0b0;
-}
-
-.lucky-stats strong {
-    font-size: 1.2rem;
-    color: var(--primary);
 }
