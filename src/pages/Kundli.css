@@ -1,445 +1,299 @@
-.kundli-page {
+.kundli-container {
     padding-top: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 80vh;
+    padding-bottom: 50px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
 }
 
-.kundli-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.kundli-header h1 {
+    font-size: 3.5rem;
+    background: linear-gradient(to right, var(--text-main), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
 }
 
-.form-container {
+/* Form Section - Centered */
+.kundli-sidebar {
     width: 100%;
-    max-width: 500px;
-    padding: 2.5rem;
-}
-
-.kundli-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-row {
-    display: flex;
-    gap: 1.5rem;
+    max-width: 600px;
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 3rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
 }
 
 .form-group label {
-    color: #a0a0b0;
-    font-size: 0.9rem;
-    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
 }
 
-input {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px;
-    color: white;
-    font-family: inherit;
+.label-icon {
+    color: var(--primary);
+}
+
+.input-field {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    color: var(--text-main);
     font-size: 1rem;
     transition: all 0.3s;
 }
 
-input:focus {
-    outline: none;
+.input-field:focus {
     border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 10px rgba(157, 78, 221, 0.2);
+    box-shadow: 0 0 10px var(--primary-glow);
+    outline: none;
 }
 
-/* Result Container */
-.result-container {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-.result-header {
-    width: 100%;
-    padding: 1.5rem;
-    text-align: center;
-}
-
-.result-details {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    color: var(--accent);
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-}
-
-/* Tabs Navigation */
-.kundli-tabs {
-    display: flex;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 5px;
+.btn-geo {
+    background: var(--primary-glow);
+    color: var(--accent-gold);
+    border: 1px solid var(--glass-border);
     border-radius: 12px;
-}
-
-.tab-btn {
-    padding: 10px 20px;
-    background: transparent;
-    border: none;
-    color: #a0a0b0;
-    cursor: pointer;
-    font-weight: 600;
-    border-radius: 8px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.3s;
 }
 
-.tab-btn:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
+.btn-geo:hover {
+    background: rgba(214, 158, 46, 0.2);
 }
 
-.tab-btn.active {
+.btn-generate {
+    width: 100%;
+    background: linear-gradient(135deg, #d69e2e, #b8860b);
+    color: white;
+    font-weight: 700;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-generate:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
+}
+
+.btn-generate:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Main Results Area */
+.results-area {
+    width: 100%;
+}
+
+/* AI Summary Card */
+.ai-summary-card {
+    background: linear-gradient(135deg, var(--card-bg), var(--primary-glow));
+    border: 1px solid var(--glass-border);
+    padding: 3.5rem;
+    margin-bottom: 3.5rem;
+    width: 100%;
+    border-radius: 48px;
+    box-shadow: 0 20px 60px var(--shadow-color);
+}
+
+.ai-header {
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.ai-content {
+    color: var(--text-muted);
+}
+
+.ai-footer {
+    color: var(--text-muted);
+    padding: 1.5rem;
+    background: var(--bg-dark);
+    border-radius: 12px;
+}
+
+/* Varga Explorer Styles */
+.result-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    padding: 2.5rem;
+}
+
+.card-title {
+    color: var(--accent-gold);
+}
+
+.varga-explorer-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.varga-title {
+    color: var(--accent-gold);
+}
+
+.varga-tabs {
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+}
+
+.varga-tab {
+    color: var(--text-muted);
+}
+
+.varga-tab:hover {
+    color: var(--text-main);
+    background: var(--primary-glow);
+}
+
+.varga-tab.active {
     background: var(--primary);
-    /* Gold/Purple */
-    color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Chart Section */
-.chart-section {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.chart-toggles {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 0.5rem;
-}
-
-.toggle-btn {
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #a0a0b0;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: all 0.2s;
-}
-
-.toggle-btn.active {
-    background: var(--accent);
-    /* Accent Color */
     color: #000;
-    /* Dark text on bright accent */
-    font-weight: bold;
-    border-color: var(--accent);
-}
-
-.chart-wrapper {
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 500px;
-}
-
-.chart-svg {
-    width: 100%;
-    height: auto;
-    max-width: 400px;
-    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2));
-}
-
-/* Basic Details */
-.basic-details {
-    width: 100%;
-    padding: 2rem;
-}
-
-.basic-details h3 {
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
 }
 
 .detail-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--glass-border);
 }
 
-.detail-row span {
-    color: #a0a0b0;
+.detail-row span:first-child {
+    color: var(--text-muted);
 }
 
-.detail-row strong {
-    color: white;
+.detail-row span:last-child {
+    color: var(--accent-gold);
 }
 
-.divider {
-    border: 0;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-    margin: 1.5rem 0;
+.planets-scroll-mini::-webkit-scrollbar-track {
+    background: var(--bg-dark);
 }
 
-/* Planets Table */
-.predictions {
-    width: 100%;
-    padding: 2rem;
+.planet-row-detailed {
+    border-bottom: 1px solid var(--glass-border);
 }
 
-.predictions h3 {
-    color: var(--accent);
-    margin-bottom: 1rem;
+.planet-row-detailed:hover {
+    background: var(--primary-glow);
 }
 
-.planet-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+.p-name {
+    color: var(--accent-gold);
 }
 
-.planet-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1.5fr;
-    /* Planet, Rashi, Degree, Nakshatra */
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    align-items: center;
+.p-sign-small {
+    color: var(--text-muted);
 }
 
-.planet-row.header {
-    background: rgba(255, 255, 255, 0.1);
-    font-weight: bold;
-    color: #ffd700;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
+.p-deg-val {
+    color: var(--text-muted);
 }
 
-.planet-row span {
+.p-nak-val {
+    color: var(--primary);
+}
+
+.sub-chart {
+    background: var(--card-bg);
+}
+
+.dasha-item-main {
+    background: var(--primary-glow);
+}
+
+.dasha-item-main:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+.dasha-item-main:hover .d-planet,
+.dasha-item-main:hover .d-dates,
+.dasha-item-main:hover .expand-icon {
+    color: #000;
+}
+
+.d-planet {
+    color: var(--accent-gold);
+}
+
+.antardasha-list {
+    background: var(--bg-dark);
+}
+
+.sub-period-row {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.sub-p-name {
+    color: var(--text-main);
+}
+
+.sub-p-dates {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+/* Empty State / Loading */
+.empty-state {
     text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding: 8rem 2rem;
+    color: rgba(255, 255, 255, 0.2);
 }
 
-/* Animations */
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Utilities */
-.w-100 {
-    width: 100%;
-}
-
-.loading-state {
-    text-align: center;
-    padding: 3rem 0;
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-left-color: var(--accent);
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
     to {
         transform: rotate(360deg);
     }
 }
 
-/* Dosha Section */
-.dosha-section {
-    width: 100%;
-    padding: 2rem;
+@media (max-width: 1000px) {
+    .explorer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .secondary-charts {
+        grid-template-columns: 1fr;
+    }
 }
 
-.dosha-section h3 {
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-}
+@media (max-width: 768px) {
+    .kundli-header h1 {
+        font-size: 2.5rem;
+    }
 
-.dosha-result {
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
+    .kundli-sidebar {
+        padding: 2rem;
+    }
 
-.dosha-result.negative {
-    background: rgba(255, 0, 0, 0.1);
-    border-color: rgba(255, 0, 0, 0.3);
-}
-
-.dosha-result.positive {
-    background: rgba(0, 255, 0, 0.1);
-    border-color: rgba(0, 255, 0, 0.3);
-}
-
-.status-text {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 0.5rem;
-}
-
-.desc-text {
-    color: #ffd700;
-    margin-bottom: 1rem;
-}
-
-.factors-list {
-    list-style: none;
-    padding: 0;
-}
-
-.factors-list li {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 8px 12px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    color: #ffcccc;
-    font-size: 0.9rem;
-}
-
-/* Dasha Section */
-.dasha-section {
-    width: 100%;
-    padding: 2rem;
-}
-
-.dasha-section h3 {
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-}
-
-.dasha-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.dasha-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.dasha-planet strong {
-    color: white;
-    font-size: 1.1rem;
-}
-
-.dasha-time span {
-    color: #a0a0b0;
-    font-size: 0.9rem;
-}
-
-/* Report Section */
-.report-section {
-    width: 100%;
-    padding: 2rem;
-}
-
-.report-section h3 {
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-}
-
-.yoga-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.yoga-card {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.yoga-card h4 {
-    color: #ffd700;
-    margin-bottom: 5px;
-    font-size: 1rem;
-}
-
-.yoga-card p {
-    font-size: 0.85rem;
-    color: #ddd;
-    line-height: 1.4;
-}
-
-.gemstone-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.gem-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 15px 25px;
-    border-radius: 12px;
-    text-align: center;
-    flex: 1;
-    min-width: 120px;
-}
-
-.gem-planet {
-    font-size: 0.8rem;
-    color: #a0a0b0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-}
-
-.gem-name {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: white;
+    .varga-explorer-panel {
+        padding: 1.5rem;
+    }
 }

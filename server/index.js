@@ -3,6 +3,20 @@ import cors from 'cors';
 import * as Astronomy from 'astronomy-engine';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import {
+    getPlanetaryPositions,
+    calculateLagna,
+    getAyanamsa,
+    calculateDasha,
+    calculateVimshottari,
+    calculateYogini,
+    calculateChara,
+    getRashiInfo,
+    getNavamsaRashi,
+    getVargaRashi,
+    calculatePanchang,
+    calculateMatchmaking
+} from './utils/astrology.js';
 
 dotenv.config();
 
@@ -11,7 +25,7 @@ const PORT = 3001;
 
 // Initialize Gemini
 const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
-const model = genAI ? genAI.getGenerativeModel({ model: "gemini-2.5-flash" }) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: "gemini-2.0-flash" }) : null;
 
 app.use(cors());
 app.use(express.json());
@@ -21,12 +35,162 @@ const ZODIAC = [
     'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
 ];
 
+const vargaConfig = [
+    { key: 'd1', division: 1, name: 'Rashi (D1)' },
+    { key: 'd2', division: 2, name: 'Hora (D2)' },
+    { key: 'd3', division: 3, name: 'Drekkana (D3)' },
+    { key: 'd4', division: 4, name: 'Chaturthamsa (D4)' },
+    { key: 'd7', division: 7, name: 'Saptamsa (D7)' },
+    { key: 'd9', division: 9, name: 'Navamsa (D9)' },
+    { key: 'd10', division: 10, name: 'Dashamsa (D10)' },
+    { key: 'd12', division: 12, name: 'Dwadasamsa (D12)' },
+    { key: 'd16', division: 16, name: 'Shodashamsa (D16)' },
+    { key: 'd20', division: 20, name: 'Vimshamsa (D20)' },
+    { key: 'd24', division: 24, name: 'Chaturvimshamsa (D24)' },
+    { key: 'd27', division: 27, name: 'Bhamsa (D27)' },
+    { key: 'd30', division: 30, name: 'Trimsamsa (D30)' },
+    { key: 'd40', division: 40, name: 'Khavedamsa (D40)' },
+    { key: 'd45', division: 45, name: 'Akshavedamsa (D45)' },
+    { key: 'd60', division: 60, name: 'Shashtyamsa (D60)' }
+];
+
+app.post('/api/birth-chart', async (req, res) => {
+    try {
+        const { date, time, latitude, longitude, name } = req.body;
+
+        if (!date || latitude === undefined || longitude === undefined) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const birthDateTime = new Date(`${date}T${time || '12:00:00'}`);
+
+        if (isNaN(birthDateTime.getTime())) {
+            return res.status(400).json({ error: 'Invalid birth date or time format. Please use YYYY-MM-DD and HH:mm.' });
+        }
+
+        const lat = parseFloat(latitude);
+        const lon = parseFloat(longitude);
+
+        if (isNaN(lat) || isNaN(lon)) {
+            return res.status(400).json({ error: 'Invalid coordinates provided. Latitude and Longitude must be numbers.' });
+        }
+
+        const ayanamsa = getAyanamsa(birthDateTime);
+        const planets = getPlanetaryPositions(birthDateTime);
+        const lagnaLong = calculateLagna(birthDateTime, lat, lon);
+        const lagnaInfo = getRashiInfo(lagnaLong);
+
+        const dashas = {
+            vimshottari: calculateVimshottari(planets.Moon.longitude, birthDateTime),
+            yogini: calculateYogini(planets.Moon.longitude, birthDateTime),
+            chara: calculateChara(birthDateTime)
+        };
+
+        const vargas = {};
+        vargaConfig.forEach(v => {
+            const vargaLagnaIndex = getVargaRashi(lagnaLong, v.division);
+            vargas[v.key] = {
+                name: v.name,
+                houses: calculateHouses(vargaLagnaIndex, planets, v.division)
+            };
+        });
+
+        const chart = {
+            metadata: {
+                name,
+                date: birthDateTime.toISOString(),
+                location: { lat, lon },
+                ayanamsa: ayanamsa.toFixed(4)
+            },
+            lagna: lagnaInfo,
+            planets,
+            dashas,
+            panchang: calculatePanchang(birthDateTime, planets.Sun.longitude, planets.Moon.longitude),
+            vargas,
+            chandraHouses: calculateHouses(planets.Moon.rashi.index, planets, 1),
+            suryaHouses: calculateHouses(planets.Sun.rashi.index, planets, 1)
+        };
+
+        // Add AI Interpretation if available
+        if (model) {
+            try {
+                const prompt = `
+                    Analyze this Vedic Birth Chart:
+                    - Lagna: ${lagnaInfo.name} at ${Math.floor(lagnaLong % 30)} degrees
+                    - Moon Sign: ${planets.Moon.rashi.name}
+                    - Current Mahadasha: ${dashas.vimshottari[0]?.planet}
+                    
+                    Provide a concise 3-paragraph life interpretation:
+                    1. Personality and Core Nature.
+                    2. Career and Wealth prospects.
+                    3. Spiritual path and major life advice.
+                    
+                    Keep it mystical yet practical.
+                `;
+                const aiResult = await model.generateContent(prompt);
+                chart.aiSummary = aiResult.response.text();
+            } catch (aiErr) {
+                console.warn("Chart AI Interpretation failed:", aiErr.message);
+            }
+        }
+
+        res.json(chart);
+
+    } catch (err) {
+        console.error("Chart Calculation Error:", err);
+        res.status(500).json({ error: "Failed to calculate birth chart" });
+    }
+});
+
+function calculateHouses(lagnaRashiIndex, planets, division = 1) {
+    const houses = Array.from({ length: 12 }, (_, i) => ({
+        house: i + 1,
+        rashi: (lagnaRashiIndex + i) % 12,
+        rashiName: ZODIAC[(lagnaRashiIndex + i) % 12],
+        planets: []
+    }));
+
+    Object.entries(planets).forEach(([name, data]) => {
+        const rashiIndex = getVargaRashi(data.longitude, division);
+        const houseIndex = (rashiIndex - lagnaRashiIndex + 12) % 12;
+
+        if (isNaN(houseIndex) || !houses[houseIndex]) return;
+
+        houses[houseIndex].planets.push({
+            name,
+            degree: data.rashi.degree,
+            formattedDegree: data.rashi.formatted
+        });
+    });
+
+    return houses;
+}
+
+app.post('/api/matchmaking', async (req, res) => {
+    try {
+        const { boyDate, girlDate } = req.body;
+        if (!boyDate || !girlDate) return res.status(400).json({ error: 'Missing birth dates' });
+
+        const bDate = new Date(boyDate);
+        const gDate = new Date(girlDate);
+
+        // Get Moon longitudes for both
+        const bMoon = Astronomy.Ecliptic(Astronomy.GeoVector('Moon', bDate, true)).elon;
+        const gMoon = Astronomy.Ecliptic(Astronomy.GeoVector('Moon', gDate, true)).elon;
+
+        const result = calculateMatchmaking(bMoon, gMoon);
+        res.json(result);
+    } catch (err) {
+        console.error("Matchmaking Error:", err);
+        res.status(500).json({ error: "Failed to calculate compatibility" });
+    }
+});
+
 app.get('/api/horoscope', async (req, res) => {
     try {
         const { sign, date, category } = req.query;
         if (!sign) return res.status(400).json({ error: 'Sign is required' });
 
-        // 1. Calculate Real Planetary Positions (Astronomy Engine)
         const targetDate = date ? new Date(date) : new Date();
         const moonVec = Astronomy.GeoVector('Moon', targetDate, true);
         const sunVec = Astronomy.GeoVector('Sun', targetDate, true);
@@ -39,12 +203,10 @@ app.get('/api/horoscope', async (req, res) => {
 
         if (userSignIndex === -1) return res.status(400).json({ error: 'Invalid Zodiac Sign' });
 
-        // Real Transit Logic
         const moonHouse = (moonSignIndex - userSignIndex + 12) % 12 + 1;
         const moonSignName = ZODIAC[moonSignIndex];
         const sunSignName = ZODIAC[sunSignIndex];
 
-        // 2. Try Generating with AI
         let aiData = null;
         if (model) {
             try {
@@ -55,17 +217,17 @@ app.get('/api/horoscope', async (req, res) => {
                     - Category: ${category || 'General'}
                     - Astronomical Context: Sun in ${sunSignName}, Moon in ${moonSignName} (House ${moonHouse}).
 
-                    RETURN ONLY A VALID JSON OBJECT. Do not include markdown formatting like \`\`\`json.
+                    RETURN ONLY A VALID JSON OBJECT. Do not include markdown formatting.
                     Schema:
                     {
-                        "prediction": "Concise, mystical, positive prediction (max 40 words) focusing on ${category || 'general life'}.",
-                        "lucky_color": "A specific color name",
-                        "lucky_numbers": "3 numbers comma separated",
-                        "lucky_alphabets": "2 letters comma separated",
-                        "cosmic_tip": "One short mystical sentence.",
-                        "single_tip": "Short advice for singles.",
-                        "couple_tip": "Short advice for couples.",
-                        "lucky_score": "Integer between 60 and 100 based on the Moon house position"
+                        "prediction": "string",
+                        "lucky_color": "string",
+                        "lucky_numbers": "string",
+                        "lucky_alphabets": "string",
+                        "cosmic_tip": "string",
+                        "single_tip": "string",
+                        "couple_tip": "string",
+                        "lucky_score": number
                     }
                 `;
 
@@ -76,53 +238,25 @@ app.get('/api/horoscope', async (req, res) => {
 
             } catch (aiError) {
                 console.error("AI Generation Failed:", aiError.message);
-                // Fallback will trigger below if aiData is null
             }
         }
 
-        // 3. Fallback to Deterministic Algorithm (if AI failed or no key)
         if (!aiData) {
-            const houseForecasts = {
-                1: { focus: "Self & Health", msg: "Heightened emotions and intuition. Prioritize yourself." },
-                2: { focus: "Finances", msg: "Focus on resources. Plan finances but avoid impulse buys." },
-                3: { focus: "Communication", msg: "Social energy is high. Great for short trips and chats." },
-                4: { focus: "Home", msg: "Domestic peace is priority. Recharge at home." },
-                5: { focus: "Romance", msg: "Creativity flows. Romance is highlighted." },
-                6: { focus: "Wellness", msg: "Detail-oriented day. Focus on health routines." },
-                7: { focus: "Partnerships", msg: "Relationships take center stage. Collaborate." },
-                8: { focus: "Transformation", msg: "Deep emotions surface. Good for research." },
-                9: { focus: "Wisdom", msg: "Seek higher knowledge or spiritual growth." },
-                10: { focus: "Career", msg: "You are visible today. Put your best foot forward." },
-                11: { focus: "Gains", msg: "Networking rewards you. Connect with friends." },
-                12: { focus: "Solitude", msg: "Time for meditation and letting go." }
-            };
-            const info = houseForecasts[moonHouse] || { focus: "Balance", msg: "Seek balance." };
-
-            const fallbackPrediction = `Moon in ${moonSignName} activates your ${moonHouse}${getOrdinal(moonHouse)} house of ${info.focus}. ${info.msg} ${generateCategoryAdvice(category)}`;
-
             aiData = {
-                prediction: fallbackPrediction,
+                prediction: `Moon in ${moonSignName} activates your ${moonHouse} house. Focus on balance and intuition.`,
                 lucky_color: "White",
-                lucky_numbers: calculateDailyScore(userSignIndex, moonSignIndex, sunSignIndex).toString(),
+                lucky_numbers: "7, 12, 21",
                 lucky_alphabets: "A, S",
                 cosmic_tip: "Trust the timing of your life.",
                 single_tip: "Love yourself first.",
                 couple_tip: "Listen with your heart.",
-                lucky_score: calculateDailyScore(userSignIndex, moonSignIndex, sunSignIndex)
+                lucky_score: 85
             };
         }
 
         res.json({
             data: {
-                horoscope_data: aiData.prediction,
-                lucky_color: aiData.lucky_color,
-                lucky_numbers: aiData.lucky_numbers,
-                lucky_alphabets: aiData.lucky_alphabets,
-                cosmic_tip: aiData.cosmic_tip,
-                single_tip: aiData.single_tip,
-                couple_tip: aiData.couple_tip,
-                lucky_score: aiData.lucky_score,
-
+                ...aiData,
                 moon_sign: moonSignName,
                 sun_sign: sunSignName,
                 moon_house: moonHouse,
@@ -136,29 +270,6 @@ app.get('/api/horoscope', async (req, res) => {
     }
 });
 
-function getOrdinal(n) {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return s[(v - 20) % 10] || s[v] || s[0];
-}
-
-function generateCategoryAdvice(cat) {
-    const advice = {
-        personal: " Trust your gut.", health: " Listen to your body.",
-        profession: " Stay focused.", emotions: " Feel deeply.",
-        travel: " Expect delays.", luck: " Fortune favors the bold."
-    };
-    return advice[cat] || "";
-}
-
-function calculateDailyScore(user, moon, sun) {
-    const diff = (moon - user + 12) % 12;
-    let base = 75;
-    if ([0, 4, 8].includes(diff)) base += 15;
-    if ([3, 6, 9].includes(diff)) base -= 10;
-    return Math.min(Math.max(base, 40), 99);
-}
-
 app.listen(PORT, () => {
-    console.log(`Astrology AI Server running on port ${PORT}`);
+    console.log(`Astrology Server running on port ${PORT}`);
 });

@@ -1,110 +1,191 @@
-.matchmaking-page {
+.matchmaking-container {
     padding-top: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 80vh;
+    padding-bottom: 5rem;
+    min-height: 100vh;
 }
 
 .match-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 4rem;
 }
 
-.form-container-wide {
-    width: 100%;
-    max-width: 800px;
-    padding: 2.5rem;
-}
-
-.partner-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.partner-section h3 {
-    color: #fff;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.form-action {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
-}
-
-.heart-beat-icon {
-    animation: heartBeat 1.2s infinite ease-in-out;
+.match-header h1 {
+    font-size: 3rem;
     margin-bottom: 1rem;
+    background: linear-gradient(to right, var(--text-main), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-@keyframes heartBeat {
-    0% {
-        transform: scale(1);
-    }
-
-    14% {
-        transform: scale(1.3);
-    }
-
-    28% {
-        transform: scale(1);
-    }
-
-    42% {
-        transform: scale(1.3);
-    }
-
-    70% {
-        transform: scale(1);
-    }
+.match-header p {
+    color: var(--text-muted);
 }
 
-.score-circle {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    margin: 2rem auto;
+/* Form Styling */
+.partner-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    overflow: hidden;
 }
 
-.score-inner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.score-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: white;
-}
-
-.score-total {
-    font-size: 1rem;
-    color: #a0a0b0;
-}
-
-.progress-ring__circle {
-    transition: stroke-dashoffset 1s ease-in-out;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    stroke-dasharray: 440;
-    /* 2 * PI * 70 */
-}
-
-.verdict {
+.card-top {
+    padding: 2rem;
     text-align: center;
+    background: var(--primary-glow);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+    padding: 1rem;
+    border-radius: 12px;
+    color: var(--text-main);
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary);
+    background: var(--bg-dark);
+}
+
+.vs-circle {
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.btn-match {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 1.2rem;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* Result View */
+.match-result-view {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+}
+
+.result-header {
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.s-val {
+    color: var(--accent-gold);
+}
+
+.s-max {
+    color: var(--text-muted);
+}
+
+.ring circle {
+    stroke: var(--glass-border);
+}
+
+.ring circle.fill {
+    stroke: var(--primary);
+}
+
+.guna-breakdown h3 {
+    color: var(--text-main);
+}
+
+.g-name {
+    color: var(--text-muted);
+}
+
+.g-score {
+    color: var(--text-main);
+}
+
+.g-bar {
+    background: var(--bg-dark);
+}
+
+.g-fill {
+    background: var(--primary);
+}
+
+.info-card h3 {
+    color: var(--accent-gold);
+}
+
+.info-card li {
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.info-card p {
+    color: var(--text-muted);
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: 5rem 0;
+}
+
+.heart-animation {
+    position: relative;
+    display: inline-block;
     margin-bottom: 2rem;
 }
 
-.verdict h3 {
-    font-size: 1.8rem;
-    color: var(--accent);
+.heart-icon {
+    color: #ff6b6b;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+@media (max-width: 900px) {
+    .match-result-view {
+        grid-template-columns: 1fr;
+    }
+
+    .guna-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .match-vs {
+        padding: 1rem 0;
+    }
 }

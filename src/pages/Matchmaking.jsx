@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Star, ShieldCheck, Info, CheckCircle2, AlertCircle } from 'lucide-react';
 import './Matchmaking.css';
 
 const Matchmaking = () => {
@@ -11,117 +11,185 @@ const Matchmaking = () => {
     });
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
-            // Mock score generation
-            const score = Math.floor(Math.random() * (36 - 18 + 1)) + 18; // Random score between 18 and 36
-            setResult({
-                score: score,
-                total: 36,
-                verdict: score > 25 ? "Excellent Match" : "Average Match"
+        setError(null);
+        try {
+            const response = await fetch('http://localhost:3001/api/matchmaking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    boyDate: formData.boyDate,
+                    girlDate: formData.girlDate
+                })
             });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            setResult(data);
+        } catch (err) {
+            setError("Failed to calculate compatibility. Please check dates.");
+        } finally {
             setLoading(false);
-        }, 2000);
+        }
     };
 
     return (
-        <div className="container matchmaking-page">
-            <div className="match-header">
-                <h1>Matchmaking</h1>
-                <p>Check compatibility using the ancient Ashta Koota system.</p>
-            </div>
+        <div className="matchmaking-container">
+            <div className="container">
+                <header className="match-header">
+                    <h1>Celestial Compatibility</h1>
+                    <p>Ancient Ashta Koota Guna Milan for Spiritual Harmony</p>
+                </header>
 
-            {!result ? (
-                <div className="glass-panel form-container-wide">
-                    {loading ? (
-                        <div className="loading-state">
-                            <Heart className="heart-beat-icon" size={48} color="#ff6b6b" />
-                            <p>Calculating planetary compatibility...</p>
+                <div className="match-layout">
+                    {!result ? (
+                        <div className="form-wrapper glass-panel">
+                            {loading ? (
+                                <div className="loading-state">
+                                    <div className="heart-animation">
+                                        <Heart size={64} className="heart-icon" />
+                                        <div className="pulse"></div>
+                                    </div>
+                                    <p>Analyzing planetary alignments for {formData.boyName} & {formData.girlName}...</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="match-form">
+                                    <div className="partners-grid">
+                                        <div className="partner-card">
+                                            <div className="card-top boy">
+                                                <div className="avatar-placeholder">♂</div>
+                                                <h3>Groom's Details</h3>
+                                            </div>
+                                            <div className="card-body">
+                                                <div className="form-group">
+                                                    <label>Full Name</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.boyName}
+                                                        onChange={e => setFormData({ ...formData, boyName: e.target.value })}
+                                                        placeholder="Enter name"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Birth Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={formData.boyDate}
+                                                        onChange={e => setFormData({ ...formData, boyDate: e.target.value })}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-vs">
+                                            <div className="vs-circle">VS</div>
+                                        </div>
+
+                                        <div className="partner-card">
+                                            <div className="card-top girl">
+                                                <div className="avatar-placeholder">♀</div>
+                                                <h3>Bride's Details</h3>
+                                            </div>
+                                            <div className="card-body">
+                                                <div className="form-group">
+                                                    <label>Full Name</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.girlName}
+                                                        onChange={e => setFormData({ ...formData, girlName: e.target.value })}
+                                                        placeholder="Enter name"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label>Birth Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={formData.girlDate}
+                                                        onChange={e => setFormData({ ...formData, girlDate: e.target.value })}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-footer">
+                                        <button type="submit" className="btn-match">
+                                            <span>Check Compatibility</span>
+                                            <Heart size={18} />
+                                        </button>
+                                        {error && <p className="error-msg"><AlertCircle size={14} /> {error}</p>}
+                                    </div>
+                                </form>
+                            )}
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit}>
-                            <div className="grid-cols-2">
-                                <div className="partner-section">
-                                    <h3>Boy's Details</h3>
-                                    <input
-                                        type="text" placeholder="Name"
-                                        value={formData.boyName}
-                                        onChange={e => setFormData({ ...formData, boyName: e.target.value })}
-                                        required
-                                    />
-                                    <input
-                                        type="date"
-                                        value={formData.boyDate}
-                                        onChange={e => setFormData({ ...formData, boyDate: e.target.value })}
-                                        required
-                                    />
+                        <div className="match-result-view">
+                            <div className="result-main glass-panel">
+                                <div className="result-header">
+                                    <div className="score-viz">
+                                        <div className="score-circle">
+                                            <span className="s-val">{result.totalScore}</span>
+                                            <span className="s-max">/ 36</span>
+                                        </div>
+                                        <svg className="ring" viewBox="0 0 100 100">
+                                            <circle cx="50" cy="50" r="45" />
+                                            <circle cx="50" cy="50" r="45" className="fill" style={{ strokeDashoffset: 283 - (283 * result.totalScore) / 36 }} />
+                                        </svg>
+                                    </div>
+                                    <div className="verdict-info">
+                                        <h2 className={result.totalScore >= 18 ? "success" : "warning"}>{result.verdict}</h2>
+                                        <p>Comprehensive report for {formData.boyName} & {formData.girlName}</p>
+                                    </div>
                                 </div>
-                                <div className="partner-section">
-                                    <h3>Girl's Details</h3>
-                                    <input
-                                        type="text" placeholder="Name"
-                                        value={formData.girlName}
-                                        onChange={e => setFormData({ ...formData, girlName: e.target.value })}
-                                        required
-                                    />
-                                    <input
-                                        type="date"
-                                        value={formData.girlDate}
-                                        onChange={e => setFormData({ ...formData, girlDate: e.target.value })}
-                                        required
-                                    />
+
+                                <div className="guna-breakdown">
+                                    <h3>Ashta Koota Analysis</h3>
+                                    <div className="guna-grid">
+                                        {result.details.map((guna, idx) => (
+                                            <div key={idx} className="guna-item">
+                                                <div className="g-meta">
+                                                    <span className="g-name">{guna.name}</span>
+                                                    <span className="g-score">{guna.score} / {guna.max}</span>
+                                                </div>
+                                                <div className="g-bar">
+                                                    <div className="g-fill" style={{ width: `${(guna.score / guna.max) * 100}%` }}></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="result-actions">
+                                    <button onClick={() => setResult(null)} className="btn-outline">New Match</button>
+                                    <button className="btn-primary">Download PDF Report</button>
                                 </div>
                             </div>
-                            <div className="form-action">
-                                <button type="submit" className="btn-primary">Match Horoscope</button>
-                            </div>
-                        </form>
+
+                            <aside className="match-info-sidebar">
+                                <div className="info-card glass-panel">
+                                    <h3><Info size={18} /> Significance</h3>
+                                    <ul>
+                                        <li><strong>18-24:</strong> Recommended for a stable union.</li>
+                                        <li><strong>25-32:</strong> Excellent spiritual compatibility.</li>
+                                        <li><strong>33-36:</strong> Rare heavenly alignment.</li>
+                                    </ul>
+                                </div>
+                                <div className="info-card glass-panel">
+                                    <h3><ShieldCheck size={18} /> Verified Analysis</h3>
+                                    <p>Our algorithm follows classical Brihat Parashara Hora Shastra guidelines for maximum accuracy.</p>
+                                </div>
+                            </aside>
+                        </div>
                     )}
                 </div>
-            ) : (
-                <div className="result-container glass-panel">
-                    <h2>Match Report</h2>
-                    <div className="score-circle">
-                        <div className="score-inner">
-                            <span className="score-value">{result.score}</span>
-                            <span className="score-total">/ 36</span>
-                        </div>
-                        <svg className="progress-ring" width="160" height="160">
-                            <circle
-                                className="progress-ring__circle"
-                                stroke="rgba(255,255,255,0.1)"
-                                strokeWidth="8"
-                                fill="transparent"
-                                r="70"
-                                cx="80"
-                                cy="80"
-                            />
-                            <circle
-                                className="progress-ring__circle fill"
-                                stroke={result.score > 24 ? "#4caf50" : "#ffcc00"}
-                                strokeWidth="8"
-                                fill="transparent"
-                                r="70"
-                                cx="80"
-                                cy="80"
-                                style={{ strokeDashoffset: 440 - (440 * result.score) / 36 }}
-                            />
-                        </svg>
-                    </div>
-                    <div className="verdict">
-                        <h3>{result.verdict}</h3>
-                        <p>
-                            {result.score > 24
-                                ? "Great mental and spiritual compatibility. A harmonious union is predicted."
-                                : "There are some differences. Understanding and patience will be key."}
-                        </p>
-                    </div>
-                    <button onClick={() => setResult(null)} className="btn-outline">Check Another</button>
-                </div>
-            )}
+            </div>
         </div>
     );
 };

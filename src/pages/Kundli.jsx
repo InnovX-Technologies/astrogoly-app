@@ -1,681 +1,434 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { Compass, Calendar, Clock, MapPin, Loader2, Info, User, Sparkles } from 'lucide-react';
 import './Kundli.css';
 
 const Kundli = () => {
-    const [activeTab, setActiveTab] = useState('charts'); // basic, charts, planets
-    const [chartType, setChartType] = useState('Lagna'); // Lagna, Navamsa
     const [formData, setFormData] = useState({
         name: '',
         date: '',
         time: '',
-        location: 'New Delhi', // Default
-        lat: 28.6139,
-        lon: 77.2090,
-        tzone: 5.5
+        latitude: '',
+        longitude: '',
+        city: ''
     });
-    const [submitted, setSubmitted] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [chartData, setChartData] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [activeVarga, setActiveVarga] = useState('d1');
+    const [activeDashaSystem, setActiveDashaSystem] = useState('vimshottari');
+    const [expandedDasha, setExpandedDasha] = useState(null);
 
-    // Simple city database for demo
-    const cities = {
-        "New Delhi": { lat: 28.6139, lon: 77.2090 },
-        "Mumbai": { lat: 19.0760, lon: 72.8777 },
-        "Chennai": { lat: 13.0827, lon: 80.2707 },
-        "Kolkata": { lat: 22.5726, lon: 88.3639 },
-        "Bangalore": { lat: 12.9716, lon: 77.5946 },
-        "London": { lat: 51.5074, lon: -0.1278 },
-        "New York": { lat: 40.7128, lon: -74.0060 },
-        "Sydney": { lat: -33.8688, lon: 151.2093 }
+    const handleInputChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleCityChange = (e) => {
-        const city = e.target.value;
-        if (cities[city]) {
-            setFormData({
-                ...formData,
-                location: city,
-                lat: cities[city].lat,
-                lon: cities[city].lon
-            });
-        } else {
-            setFormData({ ...formData, location: city });
-        }
-    };
-
-    const fetchKundliData = async () => {
-        const apiKey = import.meta.env.VITE_ASTRO_API_KEY;
-
-        // Date parsing
-        const [year, month, day] = formData.date.split('-').map(Number);
-        const [hours, minutes] = formData.time.split(':').map(Number);
-
-        const payload = {
-            year,
-            month,
-            date: day,
-            hours,
-            minutes,
-            seconds: 0,
-            latitude: formData.lat,
-            longitude: formData.lon,
-            timezone: formData.tzone,
-            config: {
-                observation_point: "topocentric",
-                ayanamsha: "lahiri"
-            }
-        };
-
+    const fetchCoordinates = async () => {
+        if (!formData.city) return;
+        setLoading(true);
         try {
-            const response = await axios.post('https://json.freeastrologyapi.com/planets', payload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                }
-            });
-
-            console.log("DEBUG: Raw API Response:", JSON.stringify(response.data, null, 2));
-
-            if (response.data && (response.data.output || response.data)) {
-                const rawData = response.data.output || response.data;
-                console.log("DEBUG: Data to Process:", JSON.stringify(rawData, null, 2));
-                return processApiResponse(rawData);
-            } else {
-                throw new Error("Invalid API Response");
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.city)}&limit=1`);
+            const data = await res.json();
+            if (data && data[0]) {
+                setFormData(prev => ({
+                    ...prev,
+                    latitude: data[0].lat,
+                    longitude: data[0].lon
+                }));
             }
         } catch (err) {
-            console.error("DEBUG: API Error Full Object:", JSON.stringify(err, null, 2));
-            console.error("API Error:", err);
-            setError("Failed to fetch horoscope data. Please check your API key.");
-            return null;
+            console.error("Geocoding error:", err);
+            setError("Could not find coordinates for this city. Please enter them manually.");
+        } finally {
+            setLoading(false);
         }
-    };
-
-    const getNavamsaSign = (longitude) => {
-        // D9 Formula: (Longitude * 9) % 360 / 30 + 1
-        return Math.floor(((longitude * 9) % 360) / 30) + 1;
-    };
-
-    const processApiResponse = (data) => {
-        const housePlanets = {
-            1: [], 2: [], 3: [], 4: [], 5: [], 6: [],
-            7: [], 8: [], 9: [], 10: [], 11: [], 12: []
-        };
-        const navamsaPlanets = {
-            1: [], 2: [], 3: [], 4: [], 5: [], 6: [],
-            7: [], 8: [], 9: [], 10: [], 11: [], 12: []
-        };
-        const planetSigns = {};
-
-        const getSign = (obj) => {
-            if (!obj) return null;
-            return parseInt(obj.sign) || parseInt(obj.current_sign) || parseInt(obj.sign_id) || parseInt(obj.rashi);
-        };
-
-        const getNakshatra = (longitude) => {
-            const nakshatras = [
-                "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha",
-                "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
-                "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
-            ];
-            const index = Math.floor(longitude / 13.333333333333333);
-            return nakshatras[index % 27];
-        };
-
-        let planetMap = data;
-
-        if (Array.isArray(data)) {
-            const foundMap = data.find(item => {
-                if (typeof item !== 'object' || item === null) return false;
-                const keys = Object.keys(item);
-                const values = Object.values(item);
-                const hasPlanetKeys = keys.some(k => ['Sun', 'Moon', 'Mars', 'Jupiter', 'Venus', 'Saturn'].includes(k));
-                const hasSignData = values.some(v => v && typeof v === 'object' && (v.current_sign || v.sign || v.sign_id));
-                return hasPlanetKeys || hasSignData;
-            });
-
-            if (foundMap) planetMap = foundMap;
-            else {
-                const isListOfPlanets = data.every(item => item && (item.current_sign || item.sign || item.sign_id));
-                if (isListOfPlanets) {
-                    planetMap = {};
-                    data.forEach((p, i) => {
-                        const key = p.name || p.id || i;
-                        planetMap[key] = p;
-                    });
-                }
-            }
-        }
-
-        // 1. Find Ascendant
-        let ascSign = 1;
-        let ascLongitude = 0;
-        let ascObj = planetMap['Ascendant'] || planetMap['Lagna'] || planetMap['ascendant'];
-
-        if (!ascObj) {
-            ascObj = Object.values(planetMap).find(v => v.name === 'Ascendant' || v.name === 'Lagna' || v.id === 12);
-        }
-
-        if (ascObj) {
-            ascSign = getSign(ascObj) || 1;
-            ascLongitude = parseFloat(ascObj.fullDegree || ascObj.normDegree || ascObj.degree || 0);
-            // Ensure absolute degree for Navamsa if relative
-            if (ascLongitude < 30.5 && ascSign > 1) {
-                ascLongitude = (ascSign - 1) * 30 + ascLongitude;
-            }
-        }
-
-        const ascNavamsaSign = getNavamsaSign(ascLongitude);
-        if (!navamsaPlanets[1].includes("Asc")) navamsaPlanets[1].push("Asc");
-
-        // 2. Map planets
-        Object.entries(planetMap).forEach(([key, value]) => {
-            if (typeof value !== 'object' || value === null) return;
-
-            let name = value.name || key;
-            const sign = getSign(value);
-
-            if (sign) {
-                if (name !== 'Ascendant' && name !== 'Lagna') {
-                    if (!isNaN(parseInt(name)) && !value.name) {
-                        // skip
-                    } else {
-                        const longitude = parseFloat(value.fullDegree || value.normDegree || value.degree || 0);
-                        const isAbsolute = longitude > 30.5;
-
-                        let displayDegree = longitude;
-                        if (isAbsolute) {
-                            displayDegree = longitude % 30;
-                        }
-
-                        let nakshatra = value.nakshatra;
-                        if ((!nakshatra || nakshatra === '-') && isAbsolute) {
-                            nakshatra = getNakshatra(longitude);
-                        }
-
-                        // Calculate Navamsa Sign
-                        let absLongitude = longitude;
-                        if (!isAbsolute) {
-                            absLongitude = (sign - 1) * 30 + longitude;
-                        }
-                        const navamsaSign = getNavamsaSign(absLongitude);
-
-                        planetSigns[name] = {
-                            sign: sign,
-                            navamsaSign: navamsaSign,
-                            degree: displayDegree,
-                            nakshatra: nakshatra || '-',
-                            ...value
-                        };
-
-                        let houseNum = (sign - ascSign + 12) % 12 + 1;
-                        const shortName = name.substr(0, 3);
-                        if (housePlanets[houseNum]) {
-                            housePlanets[houseNum].push(shortName);
-                        }
-
-                        let navHouseNum = (navamsaSign - ascNavamsaSign + 12) % 12 + 1;
-                        if (navamsaPlanets[navHouseNum]) {
-                            navamsaPlanets[navHouseNum].push(shortName);
-                        }
-                    }
-                }
-            }
-        });
-
-        if (!housePlanets[1].includes("Asc")) {
-            housePlanets[1].push("Asc");
-        }
-
-        // 3. Dosha Analysis
-        let mangalDosha = { present: false, factors: [] };
-        // Check from Lagna
-        const marsSign = planetSigns['Mars']?.sign;
-        const moonSign = planetSigns['Moon']?.sign;
-
-        if (marsSign && ascSign) {
-            const marsHouseLagna = (marsSign - ascSign + 12) % 12 + 1;
-            if ([1, 2, 4, 7, 8, 12].includes(marsHouseLagna)) {
-                mangalDosha.present = true;
-                mangalDosha.factors.push(`Mars in House ${marsHouseLagna} from Lagna`);
-            }
-        }
-        // ... Dosha Analysis from previous step ...
-
-        // 4. Vimshottari Dasha Calculation
-        let dashas = [];
-        const moonObj = planetSigns['Moon'];
-        if (moonObj) {
-            const moonLong = parseFloat(moonObj.fullDegree || moonObj.normDegree || moonObj.degree || 0);
-            let absMoonLong = moonLong;
-            if (moonLong < 30.5 && moonObj.sign) {
-                absMoonLong = (moonObj.sign - 1) * 30 + moonLong;
-            }
-
-            const dashaLords = [
-                { name: "Ketu", years: 7 }, { name: "Venus", years: 20 }, { name: "Sun", years: 6 },
-                { name: "Moon", years: 10 }, { name: "Mars", years: 7 }, { name: "Rahu", years: 18 },
-                { name: "Jupiter", years: 16 }, { name: "Saturn", years: 19 }, { name: "Mercury", years: 17 }
-            ];
-
-            // Nakshatra Index (0-26)
-            // Each Nakshatra is 13.3333 deg (800 minutes)
-            // Total Zodiac = 360 deg = 21600 minutes
-            const degPerNakshatra = 40 / 3; // 13.3333...
-            const nakshatraExactIndex = absMoonLong / degPerNakshatra;
-            const nakIndex = Math.floor(nakshatraExactIndex);
-            const fractionTraversed = nakshatraExactIndex - nakIndex;
-
-            // Identify Dasha Lord at Birth (Cycle is Ketuv, Ven, Sun, Mon, Mar, Rah, Jup, Sat, Mer)
-            // 27 Nakshatras map to 9 lords repeating 3 times.
-            // Ashwini (0) -> Ketu, Bharani (1) -> Venus ...
-            const dashaLordIndex = nakIndex % 9;
-            const startNode = dashaLords[dashaLordIndex];
-
-            // Balance of Dasha at birth
-            const balanceYears = startNode.years * (1 - fractionTraversed);
-
-            // Generate Sequence
-            let currentDate = new Date(formData.date); // birth date
-
-            // First Dasha (Balance)
-            currentDate.setFullYear(currentDate.getFullYear() + balanceYears); // approx
-            // More precise date add would be needed for real apps, simple year add for demo
-
-            dashas.push({
-                planet: startNode.name,
-                end: new Date(currentDate).toDateString(),
-                status: "Balance at Birth"
-            });
-
-            // Next 5 Dashas
-            for (let i = 1; i <= 8; i++) {
-                const idx = (dashaLordIndex + i) % 9;
-                const node = dashaLords[idx];
-                currentDate.setFullYear(currentDate.getFullYear() + node.years);
-                dashas.push({
-                    planet: node.name,
-                    end: new Date(currentDate).toDateString(),
-                    yearSpan: node.years
-                });
-            }
-        }
-
-        // 5. Yoga Analysis
-        const yogas = [];
-        const getHouse = (planet) => {
-            if (!planetSigns[planet]) return null;
-            return (planetSigns[planet].sign - ascSign + 12) % 12 + 1;
-        };
-
-        // Gajakesari: Jup in 1/4/7/10 from Moon
-        if (planetSigns['Jupiter'] && planetSigns['Moon']) {
-            const jupSign = planetSigns['Jupiter'].sign;
-            const moonSign = planetSigns['Moon'].sign;
-            const relPos = (jupSign - moonSign + 12) % 12 + 1;
-            if ([1, 4, 7, 10].includes(relPos)) {
-                yogas.push({ name: "Gajakesari Yoga", desc: "Jupiter in Kendra from Moon. Gives wealth, fame, and virtue." });
-            }
-        }
-
-        // Budhaditya: Sun + Mercury in same sign
-        if (planetSigns['Sun'] && planetSigns['Mercury']) {
-            if (planetSigns['Sun'].sign === planetSigns['Mercury'].sign) {
-                yogas.push({ name: "Budhaditya Yoga", desc: "Sun and Mercury conjunction. Gives intelligence." });
-            }
-        }
-
-        // Example: Lakshmi Yoga (9th Lord in Kendra/Trikona - simplified check)
-        // Need lordship map
-        const signLords = { 1: 'Mars', 2: 'Venus', 3: 'Mercury', 4: 'Moon', 5: 'Sun', 6: 'Mercury', 7: 'Venus', 8: 'Mars', 9: 'Jupiter', 10: 'Saturn', 11: 'Saturn', 12: 'Jupiter' };
-        // 9th house sign
-        const ninthSign = (ascSign + 8) % 12 + 1;
-        const ninthLord = signLords[ninthSign];
-        if (ninthLord && planetSigns[ninthLord]) {
-            const lordHouse = getHouse(ninthLord);
-            if ([1, 4, 7, 10, 5, 9].includes(lordHouse)) {
-                // Make sure lord is strong (not 6, 8, 12 sign logic omitted for brevity)
-                yogas.push({ name: "Lakshmi Yoga", desc: "Lord of 9th house in Kendra or Trikona. Indicates wealth and fortune." });
-            }
-        }
-
-        // 6. Gemstones (Based on Lagna Lord, 5th Lord, 9th Lord)
-        const gemMap = {
-            'Sun': 'Ruby', 'Moon': 'Pearl', 'Mars': 'Red Coral', 'Mercury': 'Emerald',
-            'Jupiter': 'Yellow Sapphire', 'Venus': 'Diamond', 'Saturn': 'Blue Sapphire'
-        };
-        const beneficialLords = [
-            signLords[ascSign], // Lagna Lord
-            signLords[(ascSign + 4) % 12 + 1], // 5th Lord
-            signLords[(ascSign + 8) % 12 + 1]  // 9th Lord
-        ];
-        const uniqueLords = [...new Set(beneficialLords)];
-        const gemstones = uniqueLords.map(l => ({ planet: l, gem: gemMap[l] })).filter(x => x.gem);
-
-        return {
-            housePlanets, navamsaPlanets, ascSign, ascNavamsaSign, planetSigns,
-            dosha: { mangal: mangalDosha },
-            dashas,
-            yogas,
-            gemstones
-        };
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        const data = await fetchKundliData();
-        setLoading(false);
-        if (data) {
+        try {
+            const payload = {
+                ...formData,
+                latitude: parseFloat(formData.latitude),
+                longitude: parseFloat(formData.longitude)
+            };
+
+            const response = await fetch('http://localhost:3001/api/birth-chart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
             setChartData(data);
-            setSubmitted(true);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const reset = () => {
-        setSubmitted(false);
-        setChartData(null);
-        setActiveTab('charts');
-    };
-
-    // UI Helpers
-    const getMoonSign = () => {
-        if (!chartData || !chartData.planetSigns['Moon']) return "-";
-        return getRashiName(chartData.planetSigns['Moon'].sign);
-    };
-
-    const getBirthNakshatra = () => {
-        if (!chartData || !chartData.planetSigns['Moon']) return "-";
-        return chartData.planetSigns['Moon'].nakshatra;
-    };
-
     return (
-        <div className="container kundli-page">
-            <div className="kundli-header">
-                <h1>Free Kundli Generation</h1>
-                <p>Enter your birth details to generate your Vedic Birth Chart (Real-time Calculation).</p>
-            </div>
+        <div className="kundli-container">
+            <div className="container">
+                <header className="kundli-header">
+                    <h1>Personalized Vedic Kundli</h1>
+                    <p>Comprehensive Shodashvarga Analysis with Precise Sidereal Calculations</p>
+                </header>
 
-            {!submitted ? (
-                <div className="glass-panel form-container">
-                    {loading ? (
-                        <div className="loading-state">
-                            <div className="spinner"></div>
-                            <p>Contacting the cosmos...</p>
-                        </div>
-                    ) : (
+                <div className="kundli-layout">
+                    {/* Input Section */}
+                    <aside className="kundli-sidebar">
                         <form onSubmit={handleSubmit} className="kundli-form">
                             <div className="form-group">
-                                <label>Full Name</label>
+                                <label><User size={16} className="label-icon" /> Full Name</label>
                                 <input
                                     type="text"
+                                    name="name"
                                     value={formData.name}
-                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                    onChange={handleInputChange}
+                                    className="input-field"
+                                    placeholder="Enter full name"
                                     required
                                 />
                             </div>
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Birth Date</label>
-                                    <input
-                                        type="date"
-                                        value={formData.date}
-                                        onChange={e => setFormData({ ...formData, date: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Birth Time</label>
-                                    <input
-                                        type="time"
-                                        value={formData.time}
-                                        onChange={e => setFormData({ ...formData, time: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                            </div>
+
                             <div className="form-group">
-                                <label>Place of Birth (Select nearest major city)</label>
-                                <select
-                                    className="glass-input"
-                                    value={formData.location}
-                                    onChange={handleCityChange}
-                                >
-                                    {Object.keys(cities).map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
+                                <label><MapPin size={16} className="label-icon" /> City / Location</label>
+                                <div className="input-row">
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        value={formData.city}
+                                        onChange={handleInputChange}
+                                        className="input-field"
+                                        placeholder="City name..."
+                                    />
+                                    <button type="button" onClick={fetchCoordinates} className="btn-geo">
+                                        <Compass size={20} />
+                                    </button>
+                                </div>
                             </div>
-                            <button type="submit" className="btn-primary w-100">Generate Kundli</button>
-                        </form>
-                    )}
-                </div>
-            ) : (
-                <div className="result-container">
-                    <div className="result-header glass-panel">
-                        <h2>Birth Chart for {formData.name}</h2>
-                        <div className="result-details">
-                            <span>{formData.date}</span> • <span>{formData.time}</span> • <span>{formData.location}</span>
-                        </div>
-                    </div>
 
-                    {/* Tabs */}
-                    <div className="kundli-tabs">
-                        {['Basic', 'Charts', 'Planets', 'Doshas', 'Dashas', 'Report'].map(tab => (
-                            <button
-                                key={tab}
-                                className={`tab-btn ${activeTab === tab.toLowerCase() ? 'active' : ''}`}
-                                onClick={() => setActiveTab(tab.toLowerCase())}
-                            >
-                                {tab}
+                            <div className="input-row">
+                                <div className="form-group">
+                                    <label><Calendar size={16} className="label-icon" /> Date</label>
+                                    <input type="date" name="date" value={formData.date} onChange={handleInputChange} className="input-field" required />
+                                </div>
+                                <div className="form-group">
+                                    <label><Clock size={16} className="label-icon" /> Time</label>
+                                    <input type="time" name="time" value={formData.time} onChange={handleInputChange} className="input-field" required />
+                                </div>
+                            </div>
+
+                            <div className="input-row">
+                                <div className="form-group">
+                                    <label className="text-xs">Lat</label>
+                                    <input type="text" name="latitude" value={formData.latitude} onChange={handleInputChange} className="input-field" />
+                                </div>
+                                <div className="form-group">
+                                    <label className="text-xs">Lon</label>
+                                    <input type="text" name="longitude" value={formData.longitude} onChange={handleInputChange} className="input-field" />
+                                </div>
+                            </div>
+
+                            <button type="submit" disabled={loading} className="btn-generate">
+                                {loading ? <Loader2 className="spinner" /> : 'GENERATE KUNDLI'}
                             </button>
-                        ))}
-                    </div>
 
-                    {/* Basic Tab */}
-                    {activeTab === 'basic' && (
-                        <div className="basic-details glass-panel fade-in">
-                            <h3>Basic Details</h3>
-                            <div className="detail-row"><span>Name:</span> <strong>{formData.name}</strong></div>
-                            <div className="detail-row"><span>Date:</span> <strong>{formData.date}</strong></div>
-                            <div className="detail-row"><span>Time:</span> <strong>{formData.time}</strong></div>
-                            <div className="detail-row"><span>Place:</span> <strong>{formData.location}</strong></div>
-                            <hr className="divider" />
-                            <h3>Avakahada Chakra</h3>
-                            <div className="detail-row"><span>Moon Sign (Rashi):</span> <strong>{getMoonSign()}</strong></div>
-                            <div className="detail-row"><span>Birth Nakshatra:</span> <strong>{getBirthNakshatra()}</strong></div>
-                        </div>
-                    )}
+                            {error && <p className="error-text">{error}</p>}
+                        </form>
+                    </aside>
 
-                    {/* Charts Tab */}
-                    {activeTab === 'charts' && (
-                        <div className="chart-section fade-in">
-                            <div className="chart-toggles">
-                                <button className={`toggle-btn ${chartType === 'Lagna' ? 'active' : ''}`} onClick={() => setChartType('Lagna')}>Lagna Chart</button>
-                                <button className={`toggle-btn ${chartType === 'Navamsa' ? 'active' : ''}`} onClick={() => setChartType('Navamsa')}>Navamsa (D9)</button>
+                    {/* Results Section */}
+                    <main className="results-area">
+                        {!chartData && !loading && (
+                            <div className="empty-state">
+                                <Info className="empty-icon" />
+                                <p>Enter birth details to visualize the complete Shodashvarga configuration</p>
                             </div>
-                            <div className="chart-wrapper glass-panel">
-                                {chartType === 'Lagna' ? (
-                                    <NorthIndianChart housePlanets={chartData.housePlanets} ascSign={chartData.ascSign} />
-                                ) : (
-                                    <NorthIndianChart housePlanets={chartData.navamsaPlanets} ascSign={chartData.ascNavamsaSign} />
+                        )}
+
+                        {loading && (
+                            <div className="empty-state">
+                                <Loader2 size={48} className="spinner" style={{ color: '#d69e2e' }} />
+                            </div>
+                        )}
+
+                        {chartData && (
+                            <div className="results-grid">
+                                {/* AI Summary Section */}
+                                {chartData.aiSummary && (
+                                    <div className="result-card ai-summary-card">
+                                        <div className="ai-header">
+                                            <Sparkles className="text-gold" size={24} />
+                                            <h2 className="card-title">Cosmic Interpretation</h2>
+                                        </div>
+                                        <div className="ai-content">
+                                            {chartData.aiSummary.split('\n').map((para, i) => (
+                                                para.trim() && <p key={i}>{para}</p>
+                                            ))}
+                                        </div>
+                                        <div className="ai-footer">
+                                            <Info size={14} />
+                                            <span>AI insights based on your unique planetary configuration.</span>
+                                        </div>
+                                    </div>
                                 )}
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Planets Tab */}
-                    {activeTab === 'planets' && (
-                        <div className="predictions glass-panel fade-in">
-                            <h3>Planetary Positions</h3>
-                            <div className="planet-grid">
-                                <div className="planet-row header">
-                                    <span>Planet</span>
-                                    <span>Rashi</span>
-                                    <span>Degree</span>
-                                    <span>Nakshatra</span>
-                                </div>
-                                {Object.entries(chartData.planetSigns).map(([planet, data]) => (
-                                    <div key={planet} className="planet-row">
-                                        <span>{planet}</span>
-                                        <span>{getRashiName(data.sign)}</span>
-                                        <span>{data.degree ? (typeof data.degree === 'number' ? data.degree.toFixed(2) : data.degree) + '°' : '-'}</span>
-                                        <span>{data.nakshatra}</span>
-                                    </div>
-                                ))}
-                                <div className="planet-row">
-                                    <span>Ascendant</span>
-                                    <span>{getRashiName(chartData.ascSign)}</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Doshas Tab */}
-                    {activeTab === 'doshas' && (
-                        <div className="dosha-section glass-panel fade-in">
-                            <h3>Mangal Dosha Analysis</h3>
-                            {chartData.dosha && chartData.dosha.mangal.present ? (
-                                <div className="dosha-result negative">
-                                    <p className="status-text">Mangal Dosha Present</p>
-                                    <p className="desc-text">Mars is placed in a position that causes Mangalik Dosha.</p>
-                                    <ul className="factors-list">
-                                        {chartData.dosha.mangal.factors.map((f, i) => <li key={i}>{f}</li>)}
-                                    </ul>
-                                </div>
-                            ) : (
-                                <div className="dosha-result positive">
-                                    <p className="status-text">No Mangal Dosha</p>
-                                    <p className="desc-text">Mars is well placed in your chart regarding Mangal Dosha rules.</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Dashas Tab */}
-                    {activeTab === 'dashas' && (
-                        <div className="dasha-section glass-panel fade-in">
-                            <h3>Vimshottari Dasha (Mahadasha)</h3>
-                            <div className="dasha-list">
-                                {chartData.dashas && chartData.dashas.map((d, i) => (
-                                    <div key={i} className="dasha-row">
-                                        <div className="dasha-planet">
-                                            <span className="planet-icon"></span>
-                                            <strong>{d.planet}</strong>
-                                        </div>
-                                        <div className="dasha-time">
-                                            <span>Ends: {d.end}</span>
+                                {/* Varga Selector */}
+                                <div className="varga-explorer-panel">
+                                    <div className="explorer-header">
+                                        <h2 className="varga-title">Varga Explorer</h2>
+                                        <div className="varga-tabs">
+                                            {chartData.vargas && Object.keys(chartData.vargas).map(key => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setActiveVarga(key)}
+                                                    className={`varga-tab ${activeVarga === key ? 'active' : ''}`}
+                                                >
+                                                    {key.toUpperCase()}
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Report Tab */}
-                    {activeTab === 'report' && (
-                        <div className="report-section glass-panel fade-in">
-                            <h3>Yoga Analysis</h3>
-                            {chartData.yogas && chartData.yogas.length > 0 ? (
-                                <div className="yoga-list">
-                                    {chartData.yogas.map((y, i) => (
-                                        <div key={i} className="yoga-card">
-                                            <h4>{y.name}</h4>
-                                            <p>{y.desc}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No major common yogas detected in this simplified analysis.</p>
-                            )}
+                                    <div className="explorer-content">
+                                        {chartData.vargas && chartData.vargas[activeVarga] ? (
+                                            <>
+                                                <div className="result-card main-chart-card">
+                                                    <h3 className="card-title">{chartData.vargas[activeVarga].name}</h3>
+                                                    <div className="chart-wrapper">
+                                                        <NorthIndianChart houses={chartData.vargas[activeVarga].houses} />
+                                                    </div>
+                                                </div>
 
-                            <hr className="divider" />
+                                                <div className="varga-details">
+                                                    <div className="result-card info-card">
+                                                        <h3 className="card-title">Detailed Panchang</h3>
+                                                        <div className="panchang-mini">
+                                                            <div className="detail-row"><span>Vara (Day)</span> <span>{chartData.panchang.vara}</span></div>
+                                                            <div className="detail-row"><span>Tithi</span> <span>{chartData.panchang.tithi}</span></div>
+                                                            <div className="detail-row"><span>Nakshatra</span> <span>{chartData.panchang.nakshatra}</span></div>
+                                                            <div className="detail-row"><span>Yoga</span> <span>{chartData.panchang.yoga}</span></div>
+                                                            <div className="detail-row"><span>Karana</span> <span>{chartData.panchang.karana}</span></div>
+                                                            <div className="detail-row"><span>Lagna</span> <span>{chartData.lagna.name} ({Math.floor(chartData.lagna.degree)}°)</span></div>
+                                                            <div className="detail-row"><span>Ayanamsa</span> <span>{chartData.metadata.ayanamsa}° (Lahiri)</span></div>
+                                                        </div>
+                                                    </div>
 
-                            <h3>Gemstone Suggestions</h3>
-                            <div className="gemstone-list">
-                                {chartData.gemstones && chartData.gemstones.map((g, i) => (
-                                    <div key={i} className="gem-card">
-                                        <div className="gem-planet">For {g.planet}</div>
-                                        <div className="gem-name">{g.gem}</div>
+                                                    <div className="result-card planetary-card">
+                                                        <h3 className="card-title">Planetary Positions</h3>
+                                                        <div className="planets-scroll-mini">
+                                                            {Object.entries(chartData.planets).map(([name, data]) => (
+                                                                <div key={name} className="planet-row-detailed">
+                                                                    <div className="p-header">
+                                                                        <span className="p-name">{name} {data.isRetrograde ? <span className="retro-tag">(R)</span> : ''}</span>
+                                                                        <span className="p-sign-small">{data.rashi.name}</span>
+                                                                    </div>
+                                                                    <div className="p-sub-details">
+                                                                        <span className="p-deg-val">{data.rashi.formatted}</span>
+                                                                        <span className="p-nak-val">{data.nakshatra.name} - {data.nakshatra.pada} Pada</span>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="empty-state">
+                                                <p>Varga data not found. Please try generating the chart again.</p>
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                </div>
 
-                    <button onClick={reset} className="btn-outline mt-4">Create New</button>
+                                <div className="secondary-charts">
+                                    <div className="result-card sub-chart">
+                                        <h3 className="card-title">Chandra Kundali</h3>
+                                        <div className="chart-wrapper-small">
+                                            <NorthIndianChart houses={chartData.chandraHouses} />
+                                        </div>
+                                    </div>
+                                    <div className="result-card sub-chart">
+                                        <h3 className="card-title">Surya Kundali</h3>
+                                        <div className="chart-wrapper-small">
+                                            <NorthIndianChart houses={chartData.suryaHouses} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Dashas Section */}
+                                <div className="result-card dasha-explorer-card">
+                                    <div className="explorer-header">
+                                        <h3 className="card-title">Chronological Life Periods (Dashas)</h3>
+                                        <div className="varga-tabs dasha-tabs">
+                                            {['vimshottari', 'yogini', 'chara'].map(system => (
+                                                <button
+                                                    key={system}
+                                                    onClick={() => {
+                                                        setActiveDashaSystem(system);
+                                                        setExpandedDasha(null);
+                                                    }}
+                                                    className={`varga-tab ${activeDashaSystem === system ? 'active' : ''}`}
+                                                >
+                                                    {system.toUpperCase()}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="dasha-timeline-grid">
+                                        {chartData.dashas[activeDashaSystem].map((dasha, i) => (
+                                            <div key={i} className="dasha-group">
+                                                <div
+                                                    className={`dasha-item-main ${expandedDasha === i ? 'expanded' : ''}`}
+                                                    onClick={() => setExpandedDasha(expandedDasha === i ? null : i)}
+                                                >
+                                                    <div className="dasha-info">
+                                                        <span className="d-planet">{dasha.planet}</span>
+                                                        <span className="d-dates">
+                                                            {new Date(dasha.start).toLocaleDateString()} - {new Date(dasha.end).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                    {activeDashaSystem === 'vimshottari' && <span className="expand-icon">{expandedDasha === i ? '−' : '+'}</span>}
+                                                </div>
+
+                                                {/* Antardashas (Sub-periods) */}
+                                                {expandedDasha === i && dasha.sub && (
+                                                    <div className="antardasha-list">
+                                                        {dasha.sub.map((sub, si) => (
+                                                            <div key={si} className="sub-period-row">
+                                                                <span className="sub-p-name">{sub.planet}</span>
+                                                                <span className="sub-p-dates">
+                                                                    {new Date(sub.start).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })} to {new Date(sub.end).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
                 </div>
-            )}
+            </div>
         </div>
     );
 };
 
-const getRashiName = (num) => {
-    const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-    return signs[num - 1] || "Unknown";
-};
+const NorthIndianChart = ({ houses }) => {
+    const getAbbr = (name) => {
+        const map = {
+            'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
+            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra', 'Ketu': 'Ke'
+        };
+        return map[name] || name.substring(0, 2);
+    };
 
-// North Indian Chart Visualization
-const NorthIndianChart = ({ housePlanets, ascSign }) => {
     return (
         <svg viewBox="0 0 400 400" className="chart-svg">
-            {/* Outer Border */}
-            <rect x="2" y="2" width="396" height="396" fill="transparent" stroke="#ffd700" strokeWidth="2" />
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                    <feMerge>
+                        <feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            <style>{`
+                .chart-line { stroke: rgba(212, 175, 55, 0.4); stroke-width: 1.5; fill: none; }
+                .house-num { fill: #f6e05e; font-size: 16px; font-weight: 800; filter: url(#glow); }
+                .planet-tag { fill: #ffffff; font-size: 11px; font-weight: 600; }
+                .planet-deg-small { fill: rgba(255,255,255,0.6); font-size: 9px; }
+            `}</style>
 
-            {/* Criss-Cross Lines for North Indian Style */}
-            <line x1="0" y1="0" x2="400" y2="400" stroke="#ffd700" strokeWidth="1" />
-            <line x1="400" y1="0" x2="0" y2="400" stroke="#ffd700" strokeWidth="1" />
+            <rect x="0" y="0" width="400" height="400" className="chart-line" />
+            <line x1="0" y1="0" x2="400" y2="400" className="chart-line" />
+            <line x1="400" y1="0" x2="0" y2="400" className="chart-line" />
+            <line x1="200" y1="0" x2="0" y2="200" className="chart-line" />
+            <line x1="0" y1="200" x2="200" y2="400" className="chart-line" />
+            <line x1="200" y1="400" x2="400" y2="200" className="chart-line" />
+            <line x1="400" y1="200" x2="200" y2="0" className="chart-line" />
 
-            {/* Diamond inner lines */}
-            <line x1="200" y1="0" x2="0" y2="200" stroke="#ffd700" strokeWidth="1" />
-            <line x1="0" y1="200" x2="200" y2="400" stroke="#ffd700" strokeWidth="1" />
-            <line x1="200" y1="400" x2="400" y2="200" stroke="#ffd700" strokeWidth="1" />
-            <line x1="400" y1="200" x2="200" y2="0" stroke="#ffd700" strokeWidth="1" />
+            {houses.map((house, i) => {
+                const houseNum = i + 1;
+                const center = getHouseCenter(houseNum);
+                const planets = house.planets;
+                const planetCount = planets.length;
 
-            {/* House Numbers (Rashi numbers) placed in corners of houses */}
-            {/* House 1 - Top Center */}
-            <text x="200" y="120" fill="#a0a0b0" fontSize="10" textAnchor="middle">{ascSign}</text>
-            <ChartText x="200" y="80" planets={housePlanets[1]} />
+                // Wrapping Logic:
+                // If more than 3 planets, we use 2 columns
+                const cols = planetCount > 3 ? 2 : 1;
+                const rows = Math.ceil(planetCount / cols);
 
-            {/* House 2 - Top Left */}
-            <text x="100" y="20" fill="#a0a0b0" fontSize="10" textAnchor="middle">{((ascSign) % 12) + 1}</text>
-            <ChartText x="100" y="45" planets={housePlanets[2]} />
+                const planetHeight = 18;
+                const numberHeight = 22;
+                const totalHeight = (rows * planetHeight) + numberHeight + 5;
 
-            {/* House 3 - Top Left Corner */}
-            <text x="20" y="20" fill="#a0a0b0" fontSize="10" textAnchor="middle">{((ascSign + 1) % 12) + 1}</text>
-            <ChartText x="40" y="80" planets={housePlanets[3]} />
+                // Exception for very narrow triangles at corners
+                const isSideTriangle = [3, 5, 9, 11].includes(houseNum);
+                const xBase = isSideTriangle ? (houseNum === 3 || houseNum === 5 ? center.x + 8 : center.x - 8) : center.x;
 
-            {/* House 4 - Right Center Diamond (Wait, looking at diagram) */}
-            {/* Let's stick to standard layout coordinates */}
-            <ChartText x="100" y="160" planets={housePlanets[4]} /> {/* House 4 - Mid Left */}
+                return (
+                    <g key={i}>
+                        {planets.map((p, pi) => {
+                            const colIndex = pi % cols;
+                            const rowIndex = Math.floor(pi / cols);
 
-            <ChartText x="40" y="260" planets={housePlanets[5]} />
-            <ChartText x="100" y="320" planets={housePlanets[6]} />
+                            // Horizontal offset if multi-column
+                            const xOffset = cols > 1 ? (colIndex === 0 ? -18 : 18) : 0;
+                            const y = center.y - (totalHeight / 2) + (rowIndex * planetHeight) + 12;
 
-            <ChartText x="200" y="260" planets={housePlanets[7]} /> {/* House 7 - Bottom Center */}
+                            return (
+                                <g key={pi}>
+                                    <text x={xBase + xOffset} y={y} className="planet-tag" textAnchor="middle">
+                                        {getAbbr(p.name)}
+                                    </text>
+                                    <text x={xBase + xOffset} y={y + 8} className="planet-deg-small" textAnchor="middle">
+                                        {Math.floor(p.degree)}°
+                                    </text>
+                                </g>
+                            );
+                        })}
 
-            <ChartText x="300" y="320" planets={housePlanets[8]} />
-            <ChartText x="360" y="260" planets={housePlanets[9]} />
-
-            <ChartText x="300" y="160" planets={housePlanets[10]} /> {/* House 10 - Mid Right */}
-
-            <ChartText x="360" y="80" planets={housePlanets[11]} />
-            <ChartText x="300" y="45" planets={housePlanets[12]} />
+                        {/* House Number (at the bottom of the cluster) */}
+                        <text
+                            x={xBase}
+                            y={center.y + (totalHeight / 2) - 3}
+                            className="house-num"
+                            textAnchor="middle"
+                        >
+                            {house.rashi + 1}
+                        </text>
+                    </g>
+                );
+            })}
         </svg>
     );
 };
 
-const ChartText = ({ x, y, planets }) => (
-    <g transform={`translate(${x}, ${y})`}>
-        {planets && planets.map((p, i) => (
-            <text key={p} x="0" y={i * 14} fontSize="12" fontWeight="bold" fill="#fff" textAnchor="middle">
-                {p}
-            </text>
-        ))}
-    </g>
-);
+const getHouseCenter = (houseNum) => {
+    const centers = {
+        1: { x: 200, y: 100 },
+        2: { x: 100, y: 40 },
+        3: { x: 40, y: 100 },
+        4: { x: 100, y: 200 },
+        5: { x: 40, y: 300 },
+        6: { x: 100, y: 360 },
+        7: { x: 200, y: 300 },
+        8: { x: 300, y: 360 },
+        9: { x: 360, y: 300 },
+        10: { x: 300, y: 200 },
+        11: { x: 360, y: 100 },
+        12: { x: 300, y: 40 }
+    };
+    return centers[houseNum];
+};
 
 export default Kundli;

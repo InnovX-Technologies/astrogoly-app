@@ -1,14 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
 
 :root {
-  --bg-dark: #050511;
-  --bg-gradient: radial-gradient(circle at top center, #1a1a3a, #050511 60%);
-  --primary: #9d4edd;
-  --accent: #ffcc00;
-  --glass: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --text-main: #ffffff;
-  --text-muted: #a0a0b0;
+  /* COSMIC DARK THEME (Planetary & Growth Focus) */
+  --bg-dark: #020205;
+  --bg-gradient: radial-gradient(circle at top right, #0a0a1a, #020205 80%);
+  --primary: #d4af37;
+  /* Jupiter Gold */
+  --primary-glow: rgba(212, 175, 55, 0.3);
+  --accent-passion: #f43f5e;
+  /* Mars Rose */
+  --accent-growth: #34d399;
+  /* Mercury Emerald */
+  --accent-gold: #fbbf24;
+  /* Sun Amber */
+  --glass: rgba(10, 10, 26, 0.8);
+  --glass-border: rgba(212, 175, 55, 0.15);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --nav-bg: rgba(2, 2, 5, 0.9);
+  --card-bg: rgba(15, 23, 42, 0.6);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+.light-theme {
+  /* SOLAR LIGHT THEME (80% Soft Ivory, 10% Gold/Amber, 10% Deep Slate) */
+  --bg-dark: #fafaf9;
+  /* Warm White / Stone 50 */
+  --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
+  /* Sunlight Glow */
+  --primary: #b45309;
+  /* Deep Amber / Jupiter */
+  --primary-glow: rgba(180, 83, 9, 0.15);
+  --accent-passion: #e11d48;
+  /* Crimson / Mars */
+  --accent-growth: #059669;
+  /* Emeral / Mercury */
+  --accent-gold: #d97706;
+  /* Goldenrod / Sun */
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(180, 83, 9, 0.2);
+  --text-main: #0c0a09;
+  /* Near Black / Stone 950 */
+  --text-muted: #57534e;
+  /* Warm Slate / Stone 600 */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --card-bg: #ffffff;
+  --shadow-color: rgba(180, 83, 9, 0.1);
 }
 
 * {
@@ -52,52 +89,55 @@ button {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #7b2cbf);
-  color: white;
-  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+  color: #000 !important;
+  padding: 0.8rem 2rem;
   border-radius: 50px;
-  font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+  box-shadow: 0 8px 25px var(--primary-glow);
 }
 
 .btn-outline {
   background: transparent;
-  border: 2px solid var(--primary);
-  color: white;
-  padding: 10px 22px;
+  border: 1.5px solid var(--primary);
+  color: var(--text-main);
+  padding: 0.7rem 1.8rem;
   border-radius: 50px;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .btn-outline:hover {
   background: var(--primary);
-  box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+  color: #000;
 }
 
 /* Typography */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   line-height: 1.2;
+  color: var(--text-main);
 }
 
 h1 {
   font-size: 3.5rem;
-  background: linear-gradient(to right, #fff, #e0aaff);
+  background: linear-gradient(to right, var(--text-main), var(--primary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
