@@ -177,10 +177,13 @@ const Kundli = () => {
                                     </div>
                                 )}
 
-                                {/* Varga Selector */}
+                                {/* Varga Explorer Selector */}
                                 <div className="varga-explorer-panel">
                                     <div className="explorer-header">
-                                        <h2 className="varga-title">Varga Explorer</h2>
+                                        <div className="varga-title-group">
+                                            <h2 className="varga-title">Varga Explorer</h2>
+                                            <p className="varga-subtitle">Divisional Chart Analysis</p>
+                                        </div>
                                         <div className="varga-tabs">
                                             {chartData.vargas && Object.keys(chartData.vargas).map(key => (
                                                 <button
@@ -197,8 +200,8 @@ const Kundli = () => {
                                     <div className="explorer-content">
                                         {chartData.vargas && chartData.vargas[activeVarga] ? (
                                             <>
-                                                <div className="result-card main-chart-card">
-                                                    <h3 className="card-title">{chartData.vargas[activeVarga].name}</h3>
+                                                <div className="main-chart-card">
+                                                    <h3 className="chart-name-display">{chartData.vargas[activeVarga].name}</h3>
                                                     <div className="chart-wrapper">
                                                         <NorthIndianChart houses={chartData.vargas[activeVarga].houses} />
                                                     </div>
@@ -206,30 +209,26 @@ const Kundli = () => {
 
                                                 <div className="varga-details">
                                                     <div className="result-card info-card">
-                                                        <h3 className="card-title">Detailed Panchang</h3>
-                                                        <div className="panchang-mini">
-                                                            <div className="detail-row"><span>Vara (Day)</span> <span>{chartData.panchang.vara}</span></div>
-                                                            <div className="detail-row"><span>Tithi</span> <span>{chartData.panchang.tithi}</span></div>
-                                                            <div className="detail-row"><span>Nakshatra</span> <span>{chartData.panchang.nakshatra}</span></div>
-                                                            <div className="detail-row"><span>Yoga</span> <span>{chartData.panchang.yoga}</span></div>
-                                                            <div className="detail-row"><span>Karana</span> <span>{chartData.panchang.karana}</span></div>
-                                                            <div className="detail-row"><span>Lagna</span> <span>{chartData.lagna.name} ({Math.floor(chartData.lagna.degree)}°)</span></div>
-                                                            <div className="detail-row"><span>Ayanamsa</span> <span>{chartData.metadata.ayanamsa}° (Lahiri)</span></div>
+                                                        <h3 className="card-title"><Calendar size={18} /> Panchang</h3>
+                                                        <div className="panchang-grid">
+                                                            <div className="detail-item"><span>Vara</span> <strong>{chartData.panchang.vara}</strong></div>
+                                                            <div className="detail-item"><span>Tithi</span> <strong>{chartData.panchang.tithi}</strong></div>
+                                                            <div className="detail-item"><span>Nakshatra</span> <strong>{chartData.panchang.nakshatra}</strong></div>
+                                                            <div className="detail-item"><span>Yoga</span> <strong>{chartData.panchang.yoga}</strong></div>
+                                                            <div className="detail-item"><span>Karana</span> <strong>{chartData.panchang.karana}</strong></div>
+                                                            <div className="detail-item"><span>Lagna</span> <strong>{chartData.lagna.name}</strong></div>
                                                         </div>
                                                     </div>
 
                                                     <div className="result-card planetary-card">
-                                                        <h3 className="card-title">Planetary Positions</h3>
-                                                        <div className="planets-scroll-mini">
+                                                        <h3 className="card-title"><Compass size={18} /> Planets</h3>
+                                                        <div className="planets-grid-mini">
                                                             {Object.entries(chartData.planets).map(([name, data]) => (
-                                                                <div key={name} className="planet-row-detailed">
-                                                                    <div className="p-header">
-                                                                        <span className="p-name">{name} {data.isRetrograde ? <span className="retro-tag">(R)</span> : ''}</span>
-                                                                        <span className="p-sign-small">{data.rashi.name}</span>
-                                                                    </div>
-                                                                    <div className="p-sub-details">
-                                                                        <span className="p-deg-val">{data.rashi.formatted}</span>
-                                                                        <span className="p-nak-val">{data.nakshatra.name} - {data.nakshatra.pada} Pada</span>
+                                                                <div key={name} className="planet-mini-row">
+                                                                    <span className="p-short-name">{name.substring(0, 2)}</span>
+                                                                    <div className="p-mini-data">
+                                                                        <span className="p-mini-sign">{data.rashi.name}</span>
+                                                                        <span className="p-mini-deg">{data.rashi.formatted}</span>
                                                                     </div>
                                                                 </div>
                                                             ))}
@@ -237,11 +236,7 @@ const Kundli = () => {
                                                     </div>
                                                 </div>
                                             </>
-                                        ) : (
-                                            <div className="empty-state">
-                                                <p>Varga data not found. Please try generating the chart again.</p>
-                                            </div>
-                                        )}
+                                        ) : null}
                                     </div>
                                 </div>
 
@@ -263,7 +258,7 @@ const Kundli = () => {
                                 {/* Dashas Section */}
                                 <div className="result-card dasha-explorer-card">
                                     <div className="explorer-header">
-                                        <h3 className="card-title">Chronological Life Periods (Dashas)</h3>
+                                        <h3 className="card-title">Dasha Timeline</h3>
                                         <div className="varga-tabs dasha-tabs">
                                             {['vimshottari', 'yogini', 'chara'].map(system => (
                                                 <button
@@ -282,29 +277,25 @@ const Kundli = () => {
 
                                     <div className="dasha-timeline-grid">
                                         {chartData.dashas[activeDashaSystem].map((dasha, i) => (
-                                            <div key={i} className="dasha-group">
+                                            <div key={i} className="dasha-node">
                                                 <div
-                                                    className={`dasha-item-main ${expandedDasha === i ? 'expanded' : ''}`}
+                                                    className={`dasha-node-main ${expandedDasha === i ? 'expanded' : ''}`}
                                                     onClick={() => setExpandedDasha(expandedDasha === i ? null : i)}
                                                 >
-                                                    <div className="dasha-info">
-                                                        <span className="d-planet">{dasha.planet}</span>
-                                                        <span className="d-dates">
-                                                            {new Date(dasha.start).toLocaleDateString()} - {new Date(dasha.end).toLocaleDateString()}
-                                                        </span>
+                                                    <div className="node-icon">{dasha.planet.substring(0, 1)}</div>
+                                                    <div className="node-content">
+                                                        <span className="node-planet">{dasha.planet}</span>
+                                                        <span className="node-date">{new Date(dasha.start).getFullYear()} - {new Date(dasha.end).getFullYear()}</span>
                                                     </div>
-                                                    {activeDashaSystem === 'vimshottari' && <span className="expand-icon">{expandedDasha === i ? '−' : '+'}</span>}
+                                                    {activeDashaSystem === 'vimshottari' && <span className="node-plus">{expandedDasha === i ? '−' : '+'}</span>}
                                                 </div>
 
-                                                {/* Antardashas (Sub-periods) */}
                                                 {expandedDasha === i && dasha.sub && (
-                                                    <div className="antardasha-list">
+                                                    <div className="node-sub-list">
                                                         {dasha.sub.map((sub, si) => (
-                                                            <div key={si} className="sub-period-row">
-                                                                <span className="sub-p-name">{sub.planet}</span>
-                                                                <span className="sub-p-dates">
-                                                                    {new Date(sub.start).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })} to {new Date(sub.end).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
-                                                                </span>
+                                                            <div key={si} className="node-sub-item">
+                                                                <span>{sub.planet}</span>
+                                                                <small>{new Date(sub.start).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</small>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -334,18 +325,20 @@ const NorthIndianChart = ({ houses }) => {
     return (
         <svg viewBox="0 0 400 400" className="chart-svg">
             <defs>
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                <filter id="goldGlow">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                     <feMerge>
-                        <feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" />
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
                     </feMerge>
                 </filter>
             </defs>
             <style>{`
-                .chart-line { stroke: rgba(212, 175, 55, 0.4); stroke-width: 1.5; fill: none; }
-                .house-num { fill: #f6e05e; font-size: 16px; font-weight: 800; filter: url(#glow); }
-                .planet-tag { fill: #ffffff; font-size: 11px; font-weight: 600; }
-                .planet-deg-small { fill: rgba(255,255,255,0.6); font-size: 9px; }
+                .chart-line { stroke: var(--primary); stroke-width: 2.5; fill: none; opacity: 0.8; }
+                .chart-line-inner { stroke: var(--accent-gold); stroke-width: 0.8; fill: none; opacity: 0.3; }
+                .house-num { fill: var(--accent-gold); font-size: 18px; font-weight: 900; filter: drop-shadow(0 0 5px var(--primary-glow)); }
+                .planet-tag { fill: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+                .planet-deg-small { fill: var(--text-muted); font-size: 9px; font-weight: 600; }
             `}</style>
 
             <rect x="0" y="0" width="400" height="400" className="chart-line" />
@@ -359,48 +352,41 @@ const NorthIndianChart = ({ houses }) => {
             {houses.map((house, i) => {
                 const houseNum = i + 1;
                 const center = getHouseCenter(houseNum);
-                const planets = house.planets;
+                const planets = house.planets || [];
                 const planetCount = planets.length;
 
-                // Wrapping Logic:
-                // If more than 3 planets, we use 2 columns
                 const cols = planetCount > 3 ? 2 : 1;
                 const rows = Math.ceil(planetCount / cols);
+                const planetHeight = 22;
+                const numberHeight = 24;
+                const totalHeight = (rows * planetHeight) + numberHeight + 8;
 
-                const planetHeight = 18;
-                const numberHeight = 22;
-                const totalHeight = (rows * planetHeight) + numberHeight + 5;
-
-                // Exception for very narrow triangles at corners
                 const isSideTriangle = [3, 5, 9, 11].includes(houseNum);
-                const xBase = isSideTriangle ? (houseNum === 3 || houseNum === 5 ? center.x + 8 : center.x - 8) : center.x;
+                const xBase = isSideTriangle ? (houseNum === 3 || houseNum === 5 ? center.x + 10 : center.x - 10) : center.x;
 
                 return (
                     <g key={i}>
                         {planets.map((p, pi) => {
                             const colIndex = pi % cols;
                             const rowIndex = Math.floor(pi / cols);
-
-                            // Horizontal offset if multi-column
-                            const xOffset = cols > 1 ? (colIndex === 0 ? -18 : 18) : 0;
-                            const y = center.y - (totalHeight / 2) + (rowIndex * planetHeight) + 12;
+                            const xOffset = cols > 1 ? (colIndex === 0 ? -22 : 22) : 0;
+                            const y = center.y - (totalHeight / 2) + (rowIndex * planetHeight) + 14;
 
                             return (
                                 <g key={pi}>
                                     <text x={xBase + xOffset} y={y} className="planet-tag" textAnchor="middle">
                                         {getAbbr(p.name)}
                                     </text>
-                                    <text x={xBase + xOffset} y={y + 8} className="planet-deg-small" textAnchor="middle">
+                                    <text x={xBase + xOffset} y={y + 9} className="planet-deg-small" textAnchor="middle">
                                         {Math.floor(p.degree)}°
                                     </text>
                                 </g>
                             );
                         })}
 
-                        {/* House Number (at the bottom of the cluster) */}
                         <text
                             x={xBase}
-                            y={center.y + (totalHeight / 2) - 3}
+                            y={center.y + (totalHeight / 2) - 4}
                             className="house-num"
                             textAnchor="middle"
                         >

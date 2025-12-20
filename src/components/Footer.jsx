@@ -14,7 +14,7 @@ const Footer = () => {
                 <div className="footer-brand">
                     <Link to="/" className="f-logo">
                         <Sparkles className="text-gold" />
-                        <span>AstroMania</span>
+                        <span>Astrogoly</span>
                     </Link>
                     <p>
                         Empowering lives through ancient Vedic wisdom and modern computational precision. Your ultimate destination for celestial guidance since 2024.
@@ -51,7 +51,7 @@ const Footer = () => {
                     <div className="link-group">
                         <h3>Contact Info</h3>
                         <ul className="contact-list">
-                            <li><Mail size={16} /> <span>support@astromania.com</span></li>
+                            <li><Mail size={16} /> <span>support@astrogoly.com</span></li>
                             <li><Phone size={16} /> <span>+1 (555) 123-STAR</span></li>
                             <li><MapPin size={16} /> <span>Cosmic Towers, Mumbai, IN</span></li>
                         </ul>
@@ -61,7 +61,7 @@ const Footer = () => {
 
             <div className="footer-bottom">
                 <div className="container b-content">
-                    <p>© 2024 AstroMania. All digital stardust reserved.</p>
+                    <p>© 2024 Astrogoly. All digital stardust reserved.</p>
                     <div className="b-links">
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>

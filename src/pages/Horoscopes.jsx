@@ -29,7 +29,7 @@ const categories = [
 const Horoscopes = () => {
     const [period, setPeriod] = useState('Daily');
     const [selectedSign, setSelectedSign] = useState(zodiacSigns[0]);
-    const [dayOffset, setDayOffset] = useState(0); // -1: Yest, 0: Today, 1: Tom
+    const [dayOffset, setDayOffset] = useState(0);
     const [category, setCategory] = useState('personal');
     const [currentDate, setCurrentDate] = useState('');
     const [prediction, setPrediction] = useState(null);
@@ -52,8 +52,6 @@ const Horoscopes = () => {
             const targetDate = new Date();
             targetDate.setDate(targetDate.getDate() + dayOffset);
 
-            // Directly query the local AI Astrology API
-            // This relies 100% on the server generating fresh data via Gemini
             const response = await axios.get(`http://localhost:3001/api/horoscope`, {
                 params: {
                     sign: selectedSign.name,
@@ -64,7 +62,6 @@ const Horoscopes = () => {
 
             if (response.data && response.data.data) {
                 const aiData = response.data.data;
-                // We expect valid JSON from the AI
                 if (aiData.lucky_color) {
                     setPrediction({
                         description: aiData.horoscope_data,
@@ -77,140 +74,134 @@ const Horoscopes = () => {
                         luckScore: aiData.lucky_score
                     });
                 } else {
-                    setPrediction({ error: "AI is currently tuning into the cosmos..." });
+                    setPrediction({ error: "Focusing cosmic energies..." });
                 }
             } else {
-                setPrediction({ error: "No signal from the stars." });
+                setPrediction({ error: "Stars are shy today." });
             }
         } catch (error) {
             console.error("AI Fetch Error:", error);
-            // Explicit error state - NO FALBACKS
-            setPrediction({ error: "Failed to connect to AI. Please ensure API Key is valid and server is running." });
+            setPrediction({ error: "Failed to connect to the cosmos. Ensure server is active." });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="container horoscopes-page">
-            <div className="horoscope-header">
-                <h1>Horoscope - Daily, Weekly, Monthly & Yearly Predictions</h1>
-                <p>Horoscopes provide detailed astrological predictions, helping you understand the influences of planets on your life.</p>
-            </div>
+        <div className="horoscopes-page">
+            <div className="container">
+                <header className="horoscope-header">
+                    <h1>Celestial Forecast</h1>
+                    <p>Daily, Weekly, Monthly & Yearly AI Predictions tailored to your zodiac's unique energy signature.</p>
+                </header>
 
-            {/* Period Tabs */}
-            <div className="period-tabs">
-                {['Daily', 'Weekly', 'Monthly', 'Yearly'].map(p => (
-                    <button
-                        key={p}
-                        className={`period-btn ${period === p ? 'active' : ''}`}
-                        onClick={() => setPeriod(p)}
-                    >
-                        {p}
-                    </button>
-                ))}
-            </div>
+                <div className="period-tabs">
+                    {['Daily', 'Weekly', 'Monthly', 'Yearly'].map(p => (
+                        <button
+                            key={p}
+                            className={`period-btn ${period === p ? 'active' : ''}`}
+                            onClick={() => setPeriod(p)}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Zodiac Grid */}
-            <div className="h-zodiac-grid">
-                {zodiacSigns.map(sign => (
-                    <div
-                        key={sign.name}
-                        className={`h-zodiac-card ${selectedSign.name === sign.name ? 'active' : ''}`}
-                        onClick={() => setSelectedSign(sign)}
-                    >
-                        <div className="h-zodiac-icon">{sign.symbol}</div>
-                        <span>{sign.name}</span>
+                <div className="h-zodiac-grid">
+                    {zodiacSigns.map(sign => (
+                        <div
+                            key={sign.name}
+                            className={`h-zodiac-card ${selectedSign.name === sign.name ? 'active' : ''}`}
+                            onClick={() => setSelectedSign(sign)}
+                        >
+                            <div className="h-zodiac-icon">{sign.symbol}</div>
+                            <span>{sign.name}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="prediction-area">
+                    <div className="date-display" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                        <h2>{currentDate}</h2>
                     </div>
-                ))}
-            </div>
 
-            {/* Date Display */}
-            <div className="date-display">
-                <h2>{currentDate}</h2>
-            </div>
+                    {period === 'Daily' && (
+                        <div className="day-tabs" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '3rem' }}>
+                            <button className={`period-btn ${dayOffset === -1 ? 'active' : ''}`} onClick={() => setDayOffset(-1)}>Yesterday</button>
+                            <button className={`period-btn ${dayOffset === 0 ? 'active' : ''}`} onClick={() => setDayOffset(0)}>Today</button>
+                            <button className={`period-btn ${dayOffset === 1 ? 'active' : ''}`} onClick={() => setDayOffset(1)}>Tomorrow</button>
+                        </div>
+                    )}
 
-            {/* Daily Controls */}
-            {period === 'Daily' && (
-                <div className="day-tabs">
-                    <button className={`day-btn ${dayOffset === -1 ? 'active' : ''}`} onClick={() => setDayOffset(-1)}>Yesterday</button>
-                    <button className={`day-btn ${dayOffset === 0 ? 'active' : ''}`} onClick={() => setDayOffset(0)}>Today</button>
-                    <button className={`day-btn ${dayOffset === 1 ? 'active' : ''}`} onClick={() => setDayOffset(1)}>Tomorrow</button>
-                </div>
-            )}
+                    <div className="category-tabs" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', justifyContent: 'center', marginBottom: '4rem' }}>
+                        {categories.map(c => (
+                            <button
+                                key={c.id}
+                                className={`period-btn ${category === c.id ? 'active' : ''}`}
+                                onClick={() => setCategory(c.id)}
+                            >
+                                <span style={{ marginRight: '8px' }}>{c.icon}</span> {c.label}
+                            </button>
+                        ))}
+                    </div>
 
-            {/* Category Tabs */}
-            <div className="category-tabs">
-                {categories.map(c => (
-                    <button
-                        key={c.id}
-                        className={`category-btn ${category === c.id ? 'active' : ''}`}
-                        onClick={() => setCategory(c.id)}
-                    >
-                        <span className="cat-icon">{c.icon}</span> {c.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Prediction Content */}
-            {loading ? (
-                <div className="loading-state">
-                    <div className="spinner"></div>
-                    <p>Consulting the stars...</p>
-                </div>
-            ) : (
-                prediction ? (
-                    !prediction.error ? (
-                        <div className="prediction-content glass-panel fade-in">
-                            <div className="prediction-text">
-                                <p className="main-desc" style={{ fontSize: '1.1rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-                                    {prediction.description}
-                                </p>
-
-                                <div className="info-row">
-                                    <span className="label">Colors of the day:</span>
-                                    <span className="value">{prediction.color}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Lucky Numbers of the day:</span>
-                                    <span className="value">{prediction.luckyNumbers}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Lucky Alphabets you will be in sync with:</span>
-                                    <span className="value">{prediction.luckyAlphabets}</span>
-                                </div>
-                                <div className="info-row highlight">
-                                    <span className="label">Cosmic Tip:</span>
-                                    <span className="value">{prediction.cosmicTip}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Tips for Singles:</span>
-                                    <span className="value">{prediction.singleTip}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Tips for Couples:</span>
-                                    <span className="value">{prediction.coupleTip}</span>
-                                </div>
-                            </div>
-
-                            <div className="luck-meter">
-                                <div className="circle-chart" style={{ '--percentage': prediction.luckScore }}>
-                                    <svg viewBox="0 0 36 36" className="circular-chart">
-                                        <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path className="circle" strokeDasharray={`${prediction.luckScore}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <text x="18" y="20.35" className="percentage">{prediction.luckScore}%</text>
-                                    </svg>
-                                </div>
-                            </div>
+                    {loading ? (
+                        <div className="empty-state" style={{ textAlign: 'center', padding: '5rem' }}>
+                            <div className="spinner" style={{ width: '60px', height: '60px', border: '4px solid var(--primary-glow)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto', animation: 'spin 1s linear infinite' }}></div>
+                            <p style={{ marginTop: '2rem', color: 'var(--text-muted)' }}>Consulting the celestial patterns for {selectedSign.name}...</p>
                         </div>
                     ) : (
-                        <div className="error-message glass-panel">
-                            <h3>{prediction.error}</h3>
-                            <p>Please check your server configuration and API keys.</p>
-                        </div>
-                    )
-                ) : null
-            )}
+                        prediction ? (
+                            !prediction.error ? (
+                                <div className="prediction-content fade-in">
+                                    <div className="prediction-text">
+                                        <div className="info-row main-desc-box">
+                                            <span className="label">Cosmic Overview</span>
+                                            <p className="value">{prediction.description}</p>
+                                        </div>
+
+                                        <div className="info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+                                            <div className="info-row">
+                                                <span className="label">Fortunate Colors</span>
+                                                <p className="value">{prediction.color}</p>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Lucky Numbers</span>
+                                                <p className="value">{prediction.luckyNumbers}</p>
+                                            </div>
+                                            <div className="info-row">
+                                                <span className="label">Astral Sync Alphabets</span>
+                                                <p className="value">{prediction.luckyAlphabets}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="info-row highlight-box" style={{ background: 'var(--primary-glow)', padding: '2rem', borderRadius: '24px', border: '1px solid var(--glass-border)' }}>
+                                            <span className="label" style={{ color: 'var(--accent-gold)' }}>Cosmic Tip</span>
+                                            <p className="value" style={{ fontStyle: 'italic', fontWeight: '700' }}>{prediction.cosmicTip}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="luck-meter">
+                                        <h3>Luck Resonance</h3>
+                                        <div className="circle-chart">
+                                            <svg viewBox="0 0 36 36" className="circular-chart" style={{ width: '200px', height: '200px' }}>
+                                                <path className="circle-bg" stroke="var(--glass-border)" strokeWidth="2.5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <path className="circle" stroke="var(--primary)" strokeWidth="2.5" strokeDasharray={`${prediction.luckScore}, 100`} fill="none" strokeLinecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <text x="18" y="21" className="percentage" style={{ fill: 'var(--text-main)', fontSize: '0.6rem', fontWeight: '900' }} textAnchor="middle">{prediction.luckScore}%</text>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="error-message glass-panel" style={{ textAlign: 'center', padding: '4rem' }}>
+                                    <h3 style={{ color: '#ff6b6b' }}>{prediction.error}</h3>
+                                    <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>The universe is currently realigning. Please try again in a few moments.</p>
+                                </div>
+                            )
+                        ) : null
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
