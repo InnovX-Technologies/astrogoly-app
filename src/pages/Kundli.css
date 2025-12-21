@@ -1,117 +1,295 @@
 .kundli-container {
-    padding-top: 140px;
+    padding-top: 120px;
     padding-bottom: 80px;
     min-height: 100vh;
     background: var(--bg-gradient);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .kundli-header {
     text-align: center;
-    margin-bottom: 5rem;
+    margin-bottom: 3rem;
 }
 
 .kundli-header h1 {
-    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-size: 3rem;
     font-weight: 800;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: var(--text-main);
-    letter-spacing: -2px;
 }
 
 .kundli-header p {
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1rem;
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* Layout */
+/* Layout: Floating App Window */
+/* This mimics a desktop app window centered on screen */
 .kundli-layout {
     display: flex;
-    gap: 3rem;
-    align-items: flex-start;
+    width: 95%;
+    max-width: 1400px;
+    height: 85vh;
+    /* Fixed height for the 'window' feel */
+    background: rgba(10, 10, 20, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
-/* Sidebar / Form */
+/* Decorative Border Glow */
+.kundli-layout::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 32px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* Internal Sidebar (Left Pane) */
 .kundli-sidebar {
-    width: 420px;
+    width: 380px;
     flex-shrink: 0;
-    background: var(--card-bg);
-    backdrop-filter: blur(24px);
-    border: 1px solid var(--glass-border);
-    border-radius: 48px;
-    padding: 3.5rem;
-    position: sticky;
-    top: 120px;
-    box-shadow: 0 40px 80px var(--shadow-color);
+    background: rgba(0, 0, 0, 0.3);
+    border-right: 1px solid var(--glass-border);
+    padding: 2.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar Scrollbar */
+.kundli-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.kundli-sidebar::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 3px;
 }
 
 .kundli-form {
     display: flex;
     flex-direction: column;
-    gap: 1.8rem;
+    gap: 2rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
 }
 
 .form-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-size: 0.8rem;
-    font-weight: 800;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 0.8rem;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
+/* Inputs: Sleek Dark Fields */
 .input-field {
     width: 100%;
-    background: var(--bg-dark);
+    background: rgba(0, 0, 0, 0.5);
+    /* Darker for contrast */
     border: 1px solid var(--glass-border);
-    border-radius: 18px;
-    padding: 1.1rem 1.4rem;
+    border-radius: 12px;
+    padding: 1rem;
     color: var(--text-main);
-    font-size: 1rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+    transition: all 0.3s;
 }
 
 .input-field:focus {
+    background: rgba(0, 0, 0, 0.8);
     border-color: var(--primary);
-    box-shadow: 0 0 25px var(--primary-glow);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
     outline: none;
-    transform: translateY(-2px);
 }
 
+/* Geo Button */
+.btn-geo {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--primary);
+    width: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-geo:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+/* Generate Button */
 .btn-generate {
     width: 100%;
-    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+    background: var(--primary);
     color: #000;
-    font-weight: 900;
-    padding: 1.3rem;
-    border-radius: 100px;
+    font-weight: 800;
+    padding: 1.2rem;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 15px 35px var(--primary-glow);
-    transition: all 0.4s;
-    letter-spacing: 3px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     margin-top: 1rem;
+    transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .btn-generate:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 45px var(--primary-glow);
+    background: var(--accent-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
 }
 
-/* Results Section */
+
+
+.btn-geo:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+.btn-generate {
+    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+    color: #000;
+    font-weight: 900;
+    padding: 1.2rem 3rem;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 30px var(--primary-glow);
+    clip-path: none;
+}
+
+.btn-generate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px var(--primary-glow);
+}
+
+
+
+.input-field:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+    /* Gold glow ring */
+    outline: none;
+    transform: translateX(4px);
+}
+
+/* Geo Button specific fix */
+.btn-geo {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--primary);
+    width: 100%;
+    padding: 0;
+    height: 52px;
+    /* Match typical input height */
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-top: 0;
+    /* Reset */
+}
+
+.btn-geo:hover {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+}
+
+/* Generate Button - Bottom Fixed or Pushed Down */
+.btn-generate {
+    margin-top: auto;
+    /* Push to bottom */
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent-gold));
+    color: #000;
+    font-weight: 900;
+    padding: 1.2rem;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    clip-path: none;
+    /* Reset */
+}
+
+.btn-generate:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
+}
+
+/* Results Section (Right Pane) */
 .results-area {
     flex: 1;
-    min-width: 0;
+    overflow-y: auto;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.01);
+    /* Subtle light tint */
+    position: relative;
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--glass-border) transparent;
+}
+
+.results-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.results-area::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 4px;
 }
 
 .results-grid {
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .varga-explorer-panel {
@@ -410,26 +588,83 @@
     font-size: 0.75rem;
 }
 
-/* Responsive */
+
+/* Responsive: Switch to Stacked Mobile View */
 @media (max-width: 1024px) {
     .kundli-layout {
         flex-direction: column;
-        align-items: stretch;
+        height: auto;
+        /* Allow full height scrolling */
+        border-radius: 0;
+        width: 100%;
+        border: none;
     }
 
     .kundli-sidebar {
         width: 100%;
-        max-width: 100%;
-        position: static;
-        margin-bottom: 2rem;
+        flex-shrink: 0;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        overflow: visible;
     }
 
-    .main-chart-card {
-        padding: 1.5rem;
+    .kundli-form {
+        flex-direction: column;
+    }
+
+    .results-area {
+        overflow: visible;
+        padding: 2rem 1.5rem;
     }
 }
 
 @media (max-width: 768px) {
+    .kundli-container {
+        padding-top: 100px;
+        padding-bottom: 40px;
+    }
+
+    .kundli-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .input-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-generate {
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .kundli-container {
+        padding-top: 100px;
+    }
+
+    .kundli-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .kundli-form>* {
+        grid-column: auto;
+        /* Reset grid */
+    }
+
+    .input-row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-generate {
+        width: 100%;
+        min-width: 0;
+    }
+
     .varga-title {
         font-size: 1.6rem;
     }
