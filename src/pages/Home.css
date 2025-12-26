@@ -12,12 +12,12 @@
 .section-header h2 {
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     margin: 1rem 0;
-    color: var(--text-main);
+    color: var(--text-dark);
     letter-spacing: -1px;
 }
 
 .sub-title {
-    color: var(--accent-gold);
+    color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 4px;
     font-size: 0.85rem;
@@ -33,7 +33,7 @@
     overflow: hidden;
     padding-top: 140px;
     padding-bottom: 80px;
-    background: radial-gradient(circle at top right, var(--primary-glow), transparent 60%);
+    background: linear-gradient(90deg, #ffffff 0%, #fff9e6 100%);
 }
 
 .hero-badge {
@@ -45,7 +45,7 @@
     padding: 0.8rem 1.6rem;
     border-radius: 100px;
     font-size: 0.85rem;
-    color: var(--accent-gold);
+    color: var(--primary);
     margin-bottom: 2.5rem;
     backdrop-filter: blur(16px);
     font-weight: 700;
@@ -57,13 +57,13 @@
     font-size: clamp(3rem, 7vw, 5.5rem);
     line-height: 1.1;
     margin-bottom: 2rem;
-    color: var(--text-main);
+    color: var(--text-dark);
     font-weight: 800;
     letter-spacing: -3px;
 }
 
 .hero h1 .text-gradient {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-gold) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -156,7 +156,7 @@
     left: 50%;
     width: 12px;
     height: 12px;
-    background: var(--accent-gold);
+    background: var(--primary);
     border-radius: 50%;
     box-shadow: 0 0 30px var(--primary);
 }
@@ -183,7 +183,7 @@
     top: 15%;
     left: 15%;
     animation-delay: 0s;
-    color: var(--accent-gold);
+    color: var(--primary);
 }
 
 .float-icon.moon {
@@ -204,7 +204,7 @@
     padding: 6rem 0;
     position: relative;
     z-index: 2;
-    background: linear-gradient(180deg, transparent, var(--bg-dark));
+    background: var(--primary);
 }
 
 .stats-grid {
@@ -212,11 +212,11 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 3rem;
     padding: 3rem;
-    background: var(--card-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 40px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 40px 100px var(--shadow-color);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    backdrop-filter: none;
+    box-shadow: none;
 }
 
 .stat-item {
@@ -229,7 +229,7 @@
     width: 64px;
     height: 64px;
     background: var(--primary-glow);
-    color: var(--accent-gold);
+    color: var(--primary);
     border-radius: 20px;
     border: 1px solid var(--glass-border);
     display: flex;
@@ -246,7 +246,7 @@
 .stat-count {
     font-size: 2.2rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-dark);
     letter-spacing: -1px;
 }
 
@@ -270,12 +270,13 @@
     display: flex;
     flex-direction: column;
     padding: 3.5rem;
-    border-radius: 48px;
+    border-radius: 16px;
     background: var(--card-bg);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--border-light);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
     overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .service-card::before {
@@ -293,7 +294,7 @@
 .service-card:hover {
     transform: translateY(-10px);
     border-color: var(--primary);
-    box-shadow: 0 40px 80px var(--shadow-color);
+    box-shadow: 0 12px 32px var(--shadow-medium);
 }
 
 .service-card:hover::before {
@@ -305,20 +306,20 @@
     z-index: 2;
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
-    border-radius: 24px;
+    background: var(--primary);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 2.5rem;
-    color: #000;
-    box-shadow: 0 20px 40px var(--primary-glow);
+    color: var(--text-dark);
+    box-shadow: 0 8px 20px var(--shadow-yellow);
 }
 
 .service-card h3 {
     font-size: 1.8rem;
     margin-bottom: 1rem;
-    color: var(--text-main);
+    color: var(--text-dark);
     font-weight: 800;
 }
 
@@ -373,7 +374,7 @@
 .choose-content h2 {
     font-size: 3.5rem;
     margin-bottom: 3.5rem;
-    color: var(--text-main);
+    color: var(--text-dark);
     letter-spacing: -2px;
 }
 
@@ -398,7 +399,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-gold);
+    color: var(--primary);
     font-size: 1.5rem;
     box-shadow: 0 10px 30px var(--shadow-color);
 }
@@ -406,7 +407,7 @@
 .feature-text h3 {
     font-size: 1.4rem;
     margin-bottom: 0.8rem;
-    color: var(--text-main);
+    color: var(--text-dark);
     font-weight: 800;
 }
 
@@ -500,19 +501,19 @@
 .client-avatar {
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+    background: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    color: #000;
+    color: var(--text-dark);
     font-size: 1.2rem;
 }
 
 .client-name {
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-dark);
     font-size: 1.1rem;
 }
 
@@ -541,7 +542,7 @@
 .newsletter-card h2 {
     font-size: 3.5rem;
     margin-bottom: 1.5rem;
-    color: var(--text-main);
+    color: var(--text-dark);
     letter-spacing: -2px;
 }
 
@@ -563,11 +564,11 @@
 
 .newsletter-form .input-field {
     flex-grow: 1;
-    background: var(--bg-dark);
-    border: 1px solid var(--glass-border);
+    background: var(--bg-main);
+    border: 1px solid var(--border-light);
     padding: 1.2rem 2rem;
     border-radius: 100px;
-    color: var(--text-main);
+    color: var(--text-dark);
     font-size: 1.1rem;
 }
 

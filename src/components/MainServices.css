@@ -1,0 +1,115 @@
+.main-services-section {
+    padding: 4rem 0;
+    background: var(--bg-main);
+}
+
+.main-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.main-service-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 2px solid var(--border-light);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.main-service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--service-color);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+}
+
+.main-service-card:hover::before {
+    transform: scaleX(1);
+}
+
+.main-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px var(--shadow-medium);
+    border-color: var(--service-color);
+}
+
+.service-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--primary);
+    color: var(--text-dark);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.service-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: transform 0.3s;
+}
+
+.main-service-card:hover .service-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.main-service-card h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+
+.main-service-card p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.service-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--service-color);
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: gap 0.3s;
+}
+
+.main-service-card:hover .service-cta {
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .main-services-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .main-service-card {
+        padding: 2rem 1.5rem;
+    }
+}

@@ -1,0 +1,65 @@
+.chart-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.chart-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--accent-light);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chart-action-btn:hover:not(:disabled) {
+    background: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-yellow);
+}
+
+.chart-action-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.chart-action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chart-action-btn .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-actions {
+        flex-direction: column;
+    }
+
+    .chart-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

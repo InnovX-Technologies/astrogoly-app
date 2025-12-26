@@ -5,6 +5,11 @@ import {
     Users, BarChart3, Globe, Sparkles,
     ArrowRight, CheckCircle2, MessageSquare
 } from 'lucide-react';
+import FloatingCTA from '../components/FloatingCTA';
+import TrustBadges from '../components/TrustBadges';
+import MainServices from '../components/MainServices';
+import ComplimentaryServices from '../components/ComplimentaryServices';
+import InTheNews from '../components/InTheNews';
 import './Home.css';
 
 const Home = () => {
@@ -66,6 +71,9 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* Main Services - Chat, Talk, Shop, Pooja */}
+            <MainServices />
+
             {/* Stats Section */}
             <section className="stats-section">
                 <div className="container">
@@ -77,6 +85,9 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Complimentary Services */}
+            <ComplimentaryServices />
 
             {/* Main Services */}
             <section className="services container">
@@ -121,7 +132,7 @@ const Home = () => {
             <section className="why-choose-us">
                 <div className="container choose-grid">
                     <div className="choose-content">
-                        <span className="sub-title">Why AstroMania?</span>
+                        <span className="sub-title">Why Astrogoly?</span>
                         <h2>The Science of Stars,<br /> Simplified for You</h2>
                         <div className="feature-list">
                             <FeatureItem
@@ -181,6 +192,9 @@ const Home = () => {
                 </div>
             </section>
 
+            {/* In The News */}
+            <InTheNews />
+
             {/* Newsletter */}
             <section className="newsletter container">
                 <div className="newsletter-card glass-panel">
@@ -194,6 +208,12 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Trust Badges */}
+            <TrustBadges />
+
+            {/* Floating CTA */}
+            <FloatingCTA />
         </div>
     );
 };

@@ -5,22 +5,23 @@
     width: 100%;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: transparent;
+    background: var(--nav-bg);
+    box-shadow: var(--nav-shadow);
 }
 
 .navbar.scrolled {
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
-    box-shadow: 0 10px 40px var(--shadow-color);
-    border-bottom: 1px solid var(--glass-border);
-    padding: 0.8rem 0;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.6rem 0;
 }
 
 /* Top Info Bar */
 .top-info-bar {
     height: 40px;
-    background: var(--bg-dark);
-    border-bottom: 1px solid var(--glass-border);
+    background: var(--primary);
+    border-bottom: 1px solid var(--border-light);
     backdrop-filter: blur(10px);
     transition: all 0.4s;
     overflow: hidden;
@@ -48,7 +49,7 @@
     align-items: center;
     gap: 0.6rem;
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--text-dark);
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -56,7 +57,7 @@
 .info-time {
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.85rem;
-    color: var(--accent-gold);
+    color: var(--text-dark);
     font-weight: 800;
 }
 
@@ -86,7 +87,7 @@
 }
 
 .logo-icon {
-    color: var(--accent-gold);
+    color: var(--primary);
     z-index: 2;
     filter: drop-shadow(0 0 8px var(--primary));
 }
@@ -94,13 +95,13 @@
 .brand-name {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--text-main);
+    color: var(--text-dark);
     letter-spacing: -1px;
 }
 
 .brand-tagline {
     font-size: 0.7rem;
-    color: var(--accent-gold);
+    color: var(--primary);
     text-transform: uppercase;
     letter-spacing: 3px;
     font-weight: 900;
@@ -124,7 +125,7 @@
     position: relative;
     color: var(--text-muted);
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.9rem;
     transition: all 0.3s;
     padding: 0.5rem 0;
@@ -133,7 +134,7 @@
 
 .nav-links a:hover,
 .nav-links a.active {
-    color: var(--text-main);
+    color: var(--text-dark);
 }
 
 .link-indicator {
@@ -141,8 +142,8 @@
     bottom: -4px;
     left: 0;
     width: 0;
-    height: 2px;
-    background: linear-gradient(to right, var(--primary), var(--accent-gold));
+    height: 3px;
+    background: var(--primary);
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 10px var(--primary-glow);
 }
@@ -161,10 +162,10 @@
 .theme-toggle {
     background: var(--glass);
     border: 1px solid var(--glass-border);
-    color: var(--accent-gold);
+    color: var(--primary);
     width: 42px;
     height: 42px;
-    border-radius: 14px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -179,10 +180,10 @@
 }
 
 .btn-nav-premium {
-    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
-    color: #000;
+    background: var(--primary);
+    color: var(--text-dark);
     padding: 0.7rem 1.5rem;
-    border-radius: 100px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -191,12 +192,13 @@
     cursor: pointer;
     transition: all 0.3s;
     border: none;
-    box-shadow: 0 10px 20px var(--primary-glow);
+    box-shadow: 0 4px 12px var(--shadow-yellow);
 }
 
 .btn-nav-premium:hover {
+    background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 15px 30px var(--primary-glow);
+    box-shadow: 0 6px 20px var(--shadow-yellow);
 }
 
 /* Mobile Toggle */
@@ -269,7 +271,7 @@
 .m-active-dot {
     width: 6px;
     height: 6px;
-    background: var(--accent-gold);
+    background: var(--primary);
     border-radius: 50%;
 }
 

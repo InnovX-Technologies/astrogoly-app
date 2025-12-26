@@ -9,23 +9,26 @@ import Tarot from './pages/Tarot';
 import Chat from './pages/Chat';
 
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './components/Toast';
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/kundli" element={<Kundli />} />
-          <Route path="/matchmaking" element={<Matchmaking />} />
-          <Route path="/horoscopes" element={<Horoscopes />} />
-          <Route path="/tarot" element={<Tarot />} />
-          <Route path="/chat" element={<Chat />} />
-        </Routes>
-        <Footer />
-      </Router>
-    </ThemeProvider>
+    <ToastProvider>
+      <ThemeProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/kundli" element={<Kundli />} />
+            <Route path="/matchmaking" element={<Matchmaking />} />
+            <Route path="/horoscopes" element={<Horoscopes />} />
+            <Route path="/tarot" element={<Tarot />} />
+            <Route path="/chat" element={<Chat />} />
+          </Routes>
+          <Footer />
+        </Router>
+      </ThemeProvider>
+    </ToastProvider>
   );
 }
 

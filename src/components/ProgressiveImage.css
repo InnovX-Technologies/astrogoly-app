@@ -1,0 +1,51 @@
+.progressive-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    background: var(--accent-light);
+}
+
+.progressive-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+.progressive-image.loading {
+    opacity: 0;
+    filter: blur(10px);
+}
+
+.progressive-image.loaded {
+    opacity: 1;
+    filter: blur(0);
+}
+
+.image-skeleton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            var(--accent-light) 0%,
+            #e0e0e0 50%,
+            var(--accent-light) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-shimmer {
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}

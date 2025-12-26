@@ -1,0 +1,243 @@
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.onboarding-spotlight {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7),
+        0 0 20px rgba(255, 204, 1, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7),
+            0 0 20px rgba(255, 204, 1, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7),
+            0 0 30px rgba(255, 204, 1, 0.5);
+    }
+}
+
+.onboarding-tooltip {
+    position: fixed;
+    z-index: 10000;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tooltip-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tooltip-close:hover {
+    background: var(--accent-light);
+    color: var(--text-dark);
+}
+
+.tooltip-content {
+    margin-bottom: 20px;
+}
+
+.tooltip-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.tooltip-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 12px;
+}
+
+.tooltip-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.tooltip-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.step-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-gray);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.step-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background: var(--primary);
+}
+
+.step-dot.completed {
+    background: var(--success);
+}
+
+.tooltip-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-tour {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-tour.btn-primary {
+    background: var(--primary);
+    color: var(--text-dark);
+}
+
+.btn-tour.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-yellow);
+}
+
+.btn-tour.btn-secondary {
+    background: var(--accent-light);
+    color: var(--text-dark);
+    border: 1px solid var(--border-light);
+}
+
+.btn-tour.btn-secondary:hover {
+    background: var(--accent-gray);
+    color: white;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--card-bg);
+    transform: rotate(45deg);
+}
+
+.onboarding-tooltip.bottom .tooltip-arrow {
+    top: -8px;
+    left: 50%;
+    margin-left: -8px;
+}
+
+.onboarding-tooltip.top .tooltip-arrow {
+    bottom: -8px;
+    left: 50%;
+    margin-left: -8px;
+}
+
+.onboarding-tooltip.left .tooltip-arrow {
+    right: -8px;
+    top: 50%;
+    margin-top: -8px;
+}
+
+.onboarding-tooltip.right .tooltip-arrow {
+    left: -8px;
+    top: 50%;
+    margin-top: -8px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .onboarding-tooltip {
+        max-width: calc(100% - 32px);
+        left: 16px !important;
+        right: 16px !important;
+        bottom: 16px !important;
+        top: auto !important;
+    }
+
+    .tooltip-actions {
+        flex-direction: column;
+    }
+
+    .btn-tour {
+        width: 100%;
+        justify-content: center;
+    }
+}

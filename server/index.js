@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import * as Astronomy from 'astronomy-engine';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import dotenv from 'dotenv';
 import {
     getPlanetaryPositions,
@@ -15,17 +15,23 @@ import {
     getNavamsaRashi,
     getVargaRashi,
     calculatePanchang,
-    calculateMatchmaking
+    calculateMatchmaking,
+    calculateAvakhada
 } from './utils/astrology.js';
+import {
+    calculateKPCusps,
+    calculateKPPlanets,
+    calculateRulingPlanets,
+    calculateBhavChalit
+} from './utils/kp-system.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = 3001;
 
-// Initialize Gemini
-const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
-const model = genAI ? genAI.getGenerativeModel({ model: "gemini-2.0-flash" }) : null;
+// Initialize Groq AI (Free & Fast!)
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
 app.use(cors());
 app.use(express.json());
@@ -56,7 +62,7 @@ const vargaConfig = [
 
 app.post('/api/birth-chart', async (req, res) => {
     try {
-        const { date, time, latitude, longitude, name } = req.body;
+        const { date, time, latitude, longitude, name, city } = req.body;
 
         if (!date || latitude === undefined || longitude === undefined) {
             return res.status(400).json({ error: 'Missing required fields' });
@@ -95,6 +101,21 @@ app.post('/api/birth-chart', async (req, res) => {
             };
         });
 
+        // Basics & Astronomy
+        const observer = new Astronomy.Observer(lat, lon, 0);
+        const sunrise = Astronomy.SearchRiseSet('Sun', observer, birthDateTime, 1, 0);
+        const sunset = Astronomy.SearchRiseSet('Sun', observer, birthDateTime, -1, 0);
+
+        const panchang = calculatePanchang(birthDateTime, planets.Sun.longitude, planets.Moon.longitude);
+        const avakhadaRaw = calculateAvakhada(planets.Moon.longitude);
+
+        const avakhada = {
+            ...avakhadaRaw,
+            yog: panchang.yoga,
+            karan: panchang.karana,
+            tithi: panchang.tithi
+        };
+
         const chart = {
             metadata: {
                 name,
@@ -102,33 +123,65 @@ app.post('/api/birth-chart', async (req, res) => {
                 location: { lat, lon },
                 ayanamsa: ayanamsa.toFixed(4)
             },
+            basicDetails: {
+                name,
+                date: date,
+                time: time,
+                place: city || `${lat.toFixed(2)}, ${lon.toFixed(2)}`,
+                latitude: lat,
+                longitude: lon,
+                timezone: "GMT+05:30",
+                sunrise: sunrise ? sunrise.date.toLocaleTimeString('en-GB') : '-',
+                sunset: sunset ? sunset.date.toLocaleTimeString('en-GB') : '-',
+                ayanamsha: ayanamsa.toFixed(6)
+            },
+            avakhada,
             lagna: lagnaInfo,
             planets,
             dashas,
-            panchang: calculatePanchang(birthDateTime, planets.Sun.longitude, planets.Moon.longitude),
+            panchang,
             vargas,
             chandraHouses: calculateHouses(planets.Moon.rashi.index, planets, 1),
-            suryaHouses: calculateHouses(planets.Sun.rashi.index, planets, 1)
+            suryaHouses: calculateHouses(planets.Sun.rashi.index, planets, 1),
+            // KP System Data
+            kp: {
+                cusps: calculateKPCusps(lagnaLong),
+                planets: calculateKPPlanets(planets),
+                rulingPlanets: calculateRulingPlanets(lagnaLong, planets.Moon.longitude),
+                bhavChalit: calculateBhavChalit(lagnaLong, planets)
+            }
         };
 
-        // Add AI Interpretation if available
-        if (model) {
+        // Add AI Interpretation using Groq
+        if (groq) {
             try {
-                const prompt = `
-                    Analyze this Vedic Birth Chart:
-                    - Lagna: ${lagnaInfo.name} at ${Math.floor(lagnaLong % 30)} degrees
-                    - Moon Sign: ${planets.Moon.rashi.name}
-                    - Current Mahadasha: ${dashas.vimshottari[0]?.planet}
-                    
-                    Provide a concise 3-paragraph life interpretation:
-                    1. Personality and Core Nature.
-                    2. Career and Wealth prospects.
-                    3. Spiritual path and major life advice.
-                    
-                    Keep it mystical yet practical.
-                `;
-                const aiResult = await model.generateContent(prompt);
-                chart.aiSummary = aiResult.response.text();
+                const completion = await groq.chat.completions.create({
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are an expert Vedic Astrologer. Provide mystical yet practical interpretations."
+                        },
+                        {
+                            role: "user",
+                            content: `Analyze this Vedic Birth Chart:
+                            - Lagna: ${lagnaInfo.name} at ${Math.floor(lagnaLong % 30)} degrees
+                            - Moon Sign: ${planets.Moon.rashi.name}
+                            - Current Mahadasha: ${dashas.vimshottari[0]?.planet}
+                            
+                            Provide a concise 3-paragraph life interpretation:
+                            1. Personality and Core Nature.
+                            2. Career and Wealth prospects.
+                            3. Spiritual path and major life advice.
+                            
+                            Keep it mystical yet practical.`
+                        }
+                    ],
+                    model: "llama-3.3-70b-versatile", // Free, fast, and powerful
+                    temperature: 0.7,
+                    max_tokens: 500
+                });
+
+                chart.aiSummary = completion.choices[0]?.message?.content || "AI interpretation unavailable.";
             } catch (aiErr) {
                 console.warn("Chart AI Interpretation failed:", aiErr.message);
             }

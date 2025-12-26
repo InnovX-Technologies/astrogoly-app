@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Compass, Calendar, Clock, MapPin, Loader2, Info, User, Sparkles } from 'lucide-react';
+import { ChartSkeleton } from '../components/LoadingSkeleton';
+import { NorthIndianChart } from '../components/NorthIndianChart';
 import './Kundli.css';
 
 const Kundli = () => {
@@ -14,6 +16,7 @@ const Kundli = () => {
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('basic');
     const [activeVarga, setActiveVarga] = useState('d1');
     const [activeDashaSystem, setActiveDashaSystem] = useState('vimshottari');
     const [expandedDasha, setExpandedDasha] = useState(null);
@@ -71,16 +74,16 @@ const Kundli = () => {
 
     return (
         <div className="kundli-container">
-            <div className="container">
-                <header className="kundli-header">
-                    <h1>Personalized Vedic Kundli</h1>
-                    <p>Comprehensive Shodashvarga Analysis with Precise Sidereal Calculations</p>
-                </header>
+            {!chartData ? (
+                // Centered Form View
+                <div className="kundli-form-container">
+                    <header className="kundli-header-centered">
+                        <h1>Personalized Vedic Kundli</h1>
+                        <p>Comprehensive Shodashvarga Analysis with Precise Sidereal Calculations</p>
+                    </header>
 
-                <div className="kundli-layout">
-                    {/* Input Section */}
-                    <aside className="kundli-sidebar">
-                        <form onSubmit={handleSubmit} className="kundli-form">
+                    <div className="kundli-form-wrapper">
+                        <form onSubmit={handleSubmit} className="kundli-form-centered">
                             <div className="form-group">
                                 <label><User size={16} className="label-icon" /> Full Name</label>
                                 <input
@@ -124,12 +127,12 @@ const Kundli = () => {
 
                             <div className="input-row">
                                 <div className="form-group">
-                                    <label className="text-xs">Lat</label>
-                                    <input type="text" name="latitude" value={formData.latitude} onChange={handleInputChange} className="input-field" />
+                                    <label className="text-xs">Latitude</label>
+                                    <input type="text" name="latitude" value={formData.latitude} onChange={handleInputChange} className="input-field" placeholder="26.42" />
                                 </div>
                                 <div className="form-group">
-                                    <label className="text-xs">Lon</label>
-                                    <input type="text" name="longitude" value={formData.longitude} onChange={handleInputChange} className="input-field" />
+                                    <label className="text-xs">Longitude</label>
+                                    <input type="text" name="longitude" value={formData.longitude} onChange={handleInputChange} className="input-field" placeholder="84.37" />
                                 </div>
                             </div>
 
@@ -139,181 +142,389 @@ const Kundli = () => {
 
                             {error && <p className="error-text">{error}</p>}
                         </form>
-                    </aside>
+                    </div>
+                </div>
+            ) : (
+                // Full-Width Results View
+                <div className="kundli-results-view">
+                    {/* Tabbed Navigation */}
+                    <div className="kundli-tabs-container">
+                        <div className="kundli-tabs">
+                            <button
+                                className={`kundli-tab ${activeTab === 'basic' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('basic')}
+                            >
+                                Basic
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'kundli' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('kundli')}
+                            >
+                                Kundli
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'kp' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('kp')}
+                            >
+                                KP
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'ashtakvarga' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('ashtakvarga')}
+                            >
+                                Ashtakvarga
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'charts' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('charts')}
+                            >
+                                Charts
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'dasha' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('dasha')}
+                            >
+                                Dasha
+                            </button>
+                            <button
+                                className={`kundli-tab ${activeTab === 'report' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('report')}
+                            >
+                                Free Report
+                            </button>
+                        </div>
+                    </div>
 
-                    {/* Results Section */}
-                    <main className="results-area">
-                        {!chartData && !loading && (
-                            <div className="empty-state">
-                                <Info className="empty-icon" />
-                                <p>Enter birth details to visualize the complete Shodashvarga configuration</p>
-                            </div>
-                        )}
-
-                        {loading && (
-                            <div className="empty-state">
-                                <Loader2 size={48} className="spinner" style={{ color: '#d69e2e' }} />
-                            </div>
-                        )}
-
-                        {chartData && (
-                            <div className="results-grid">
-                                {/* AI Summary Section */}
-                                {chartData.aiSummary && (
-                                    <div className="result-card ai-summary-card">
-                                        <div className="ai-header">
-                                            <Sparkles className="text-gold" size={24} />
-                                            <h2 className="card-title">Cosmic Interpretation</h2>
+                    {/* Tab Content */}
+                    <div className="results-content">
+                        {/* Basic Tab */}
+                        {activeTab === 'basic' && chartData.basicDetails && chartData.avakhada && (
+                            <div className="details-comparison-card">
+                                <div className="details-comparison-grid">
+                                    {/* Basic Details */}
+                                    <div className="details-column">
+                                        <h3 className="section-title">Basic Details</h3>
+                                        <div className="details-list">
+                                            <div className="detail-row"><span>Name</span> <strong>{chartData.basicDetails.name}</strong></div>
+                                            <div className="detail-row"><span>Date</span> <strong>{chartData.basicDetails.date}</strong></div>
+                                            <div className="detail-row"><span>Time</span> <strong>{chartData.basicDetails.time}</strong></div>
+                                            <div className="detail-row"><span>Place</span> <strong>{chartData.basicDetails.place}</strong></div>
+                                            <div className="detail-row"><span>Latitude</span> <strong>{chartData.basicDetails.latitude}</strong></div>
+                                            <div className="detail-row"><span>Longitude</span> <strong>{chartData.basicDetails.longitude}</strong></div>
+                                            <div className="detail-row"><span>Timezone</span> <strong>{chartData.basicDetails.timezone}</strong></div>
+                                            <div className="detail-row"><span>Sunrise</span> <strong>{chartData.basicDetails.sunrise}</strong></div>
+                                            <div className="detail-row"><span>Sunset</span> <strong>{chartData.basicDetails.sunset}</strong></div>
+                                            <div className="detail-row"><span>Ayanamsha</span> <strong>{chartData.basicDetails.ayanamsha}</strong></div>
                                         </div>
-                                        <div className="ai-content">
-                                            {chartData.aiSummary.split('\n').map((para, i) => (
-                                                para.trim() && <p key={i}>{para}</p>
-                                            ))}
-                                        </div>
-                                        <div className="ai-footer">
-                                            <Info size={14} />
-                                            <span>AI insights based on your unique planetary configuration.</span>
-                                        </div>
-                                    </div>
-                                )}
 
-                                {/* Varga Explorer Selector */}
-                                <div className="varga-explorer-panel">
-                                    <div className="explorer-header">
-                                        <div className="varga-title-group">
-                                            <h2 className="varga-title">Varga Explorer</h2>
-                                            <p className="varga-subtitle">Divisional Chart Analysis</p>
-                                        </div>
-                                        <div className="varga-tabs">
-                                            {chartData.vargas && Object.keys(chartData.vargas).map(key => (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => setActiveVarga(key)}
-                                                    className={`varga-tab ${activeVarga === key ? 'active' : ''}`}
-                                                >
-                                                    {key.toUpperCase()}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="explorer-content">
-                                        {chartData.vargas && chartData.vargas[activeVarga] ? (
-                                            <>
-                                                <div className="main-chart-card">
-                                                    <h3 className="chart-name-display">{chartData.vargas[activeVarga].name}</h3>
-                                                    <div className="chart-wrapper">
-                                                        <NorthIndianChart houses={chartData.vargas[activeVarga].houses} />
-                                                    </div>
-                                                </div>
-
-                                                <div className="varga-details">
-                                                    <div className="result-card info-card">
-                                                        <h3 className="card-title"><Calendar size={18} /> Panchang</h3>
-                                                        <div className="panchang-grid">
-                                                            <div className="detail-item"><span>Vara</span> <strong>{chartData.panchang.vara}</strong></div>
-                                                            <div className="detail-item"><span>Tithi</span> <strong>{chartData.panchang.tithi}</strong></div>
-                                                            <div className="detail-item"><span>Nakshatra</span> <strong>{chartData.panchang.nakshatra}</strong></div>
-                                                            <div className="detail-item"><span>Yoga</span> <strong>{chartData.panchang.yoga}</strong></div>
-                                                            <div className="detail-item"><span>Karana</span> <strong>{chartData.panchang.karana}</strong></div>
-                                                            <div className="detail-item"><span>Lagna</span> <strong>{chartData.lagna.name}</strong></div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="result-card planetary-card">
-                                                        <h3 className="card-title"><Compass size={18} /> Planets</h3>
-                                                        <div className="planets-grid-mini">
-                                                            {Object.entries(chartData.planets).map(([name, data]) => (
-                                                                <div key={name} className="planet-mini-row">
-                                                                    <span className="p-short-name">{name.substring(0, 2)}</span>
-                                                                    <div className="p-mini-data">
-                                                                        <span className="p-mini-sign">{data.rashi.name}</span>
-                                                                        <span className="p-mini-deg">{data.rashi.formatted}</span>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </>
-                                        ) : null}
-                                    </div>
-                                </div>
-
-                                <div className="secondary-charts">
-                                    <div className="result-card sub-chart">
-                                        <h3 className="card-title">Chandra Kundali</h3>
-                                        <div className="chart-wrapper-small">
-                                            <NorthIndianChart houses={chartData.chandraHouses} />
+                                        {/* Panchang Details within Basic Details */}
+                                        <h3 className="section-title">Panchang Details</h3>
+                                        <div className="details-list">
+                                            <div className="detail-row"><span>Tithi</span> <strong>{chartData.panchang?.tithi || chartData.avakhada?.tithi || 'N/A'}</strong></div>
+                                            <div className="detail-row"><span>Karan</span> <strong>{chartData.panchang?.karana || chartData.avakhada?.karan || 'N/A'}</strong></div>
+                                            <div className="detail-row"><span>Yog</span> <strong>{chartData.panchang?.yoga || chartData.avakhada?.yog || 'N/A'}</strong></div>
+                                            <div className="detail-row"><span>Nakshatra</span> <strong>{chartData.panchang?.nakshatra || chartData.avakhada?.nakshatraCharan?.split('-')[0] || 'N/A'}</strong></div>
                                         </div>
                                     </div>
-                                    <div className="result-card sub-chart">
-                                        <h3 className="card-title">Surya Kundali</h3>
-                                        <div className="chart-wrapper-small">
-                                            <NorthIndianChart houses={chartData.suryaHouses} />
+
+                                    {/* Avakhada Details */}
+                                    <div className="details-column">
+                                        <h3 className="section-title">Avakhada Details</h3>
+                                        <div className="details-list">
+                                            <div className="detail-row"><span>Varna</span> <strong>{chartData.avakhada.varna}</strong></div>
+                                            <div className="detail-row"><span>Vashya</span> <strong>{chartData.avakhada.vashya}</strong></div>
+                                            <div className="detail-row"><span>Yoni</span> <strong>{chartData.avakhada.yoni}</strong></div>
+                                            <div className="detail-row"><span>Gan</span> <strong>{chartData.avakhada.gan}</strong></div>
+                                            <div className="detail-row"><span>Nadi</span> <strong>{chartData.avakhada.nadi}</strong></div>
+                                            <div className="detail-row"><span>Sign</span> <strong>{chartData.avakhada.sign}</strong></div>
+                                            <div className="detail-row"><span>Sign Lord</span> <strong>{chartData.avakhada.signLord}</strong></div>
+                                            <div className="detail-row"><span>Nakshatra-Charan</span> <strong>{chartData.avakhada.nakshatraCharan}</strong></div>
+                                            <div className="detail-row"><span>Yog</span> <strong>{chartData.avakhada.yog}</strong></div>
+                                            <div className="detail-row"><span>Karan</span> <strong>{chartData.avakhada.karan}</strong></div>
+                                            <div className="detail-row"><span>Tithi</span> <strong>{chartData.avakhada.tithi}</strong></div>
+                                            <div className="detail-row"><span>Yunja</span> <strong>{chartData.avakhada.yunja}</strong></div>
+                                            <div className="detail-row"><span>Tatva</span> <strong>{chartData.avakhada.tatva}</strong></div>
+                                            <div className="detail-row"><span>Name Alphabet</span> <strong>{chartData.avakhada.nameAlphabet}</strong></div>
+                                            <div className="detail-row"><span>Paya</span> <strong>{chartData.avakhada.paya}</strong></div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        )}
 
-                                {/* Dashas Section */}
-                                <div className="result-card dasha-explorer-card">
-                                    <div className="explorer-header">
-                                        <h3 className="card-title">Dasha Timeline</h3>
-                                        <div className="varga-tabs dasha-tabs">
-                                            {['vimshottari', 'yogini', 'chara'].map(system => (
-                                                <button
-                                                    key={system}
-                                                    onClick={() => {
-                                                        setActiveDashaSystem(system);
-                                                        setExpandedDasha(null);
-                                                    }}
-                                                    className={`varga-tab ${activeDashaSystem === system ? 'active' : ''}`}
-                                                >
-                                                    {system.toUpperCase()}
-                                                </button>
-                                            ))}
-                                        </div>
+                        {/* Kundli Tab - Varga Explorer */}
+                        {activeTab === 'kundli' && chartData.vargas && (
+                            <div className="varga-explorer-panel">
+                                <div className="explorer-header">
+                                    <div className="varga-title-group">
+                                        <h2 className="varga-title">Varga Explorer</h2>
+                                        <p className="varga-subtitle">Divisional Chart Analysis</p>
                                     </div>
-
-                                    <div className="dasha-timeline-grid">
-                                        {chartData.dashas[activeDashaSystem].map((dasha, i) => (
-                                            <div key={i} className="dasha-node">
-                                                <div
-                                                    className={`dasha-node-main ${expandedDasha === i ? 'expanded' : ''}`}
-                                                    onClick={() => setExpandedDasha(expandedDasha === i ? null : i)}
-                                                >
-                                                    <div className="node-icon">{dasha.planet.substring(0, 1)}</div>
-                                                    <div className="node-content">
-                                                        <span className="node-planet">{dasha.planet}</span>
-                                                        <span className="node-date">{new Date(dasha.start).getFullYear()} - {new Date(dasha.end).getFullYear()}</span>
-                                                    </div>
-                                                    {activeDashaSystem === 'vimshottari' && <span className="node-plus">{expandedDasha === i ? '−' : '+'}</span>}
-                                                </div>
-
-                                                {expandedDasha === i && dasha.sub && (
-                                                    <div className="node-sub-list">
-                                                        {dasha.sub.map((sub, si) => (
-                                                            <div key={si} className="node-sub-item">
-                                                                <span>{sub.planet}</span>
-                                                                <small>{new Date(sub.start).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</small>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
+                                    <div className="varga-tabs">
+                                        {Object.keys(chartData.vargas).map(key => (
+                                            <button
+                                                key={key}
+                                                onClick={() => setActiveVarga(key)}
+                                                className={`varga-tab ${activeVarga === key ? 'active' : ''}`}
+                                            >
+                                                {key.toUpperCase()}
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
+
+                                <div className="explorer-content">
+                                    {chartData.vargas[activeVarga] && (
+                                        <>
+                                            <div className="main-chart-card">
+                                                <h3 className="chart-name-display">{chartData.vargas[activeVarga].name}</h3>
+                                                <div className="chart-wrapper">
+                                                    <VargaChart houses={chartData.vargas[activeVarga].houses} />
+                                                </div>
+                                            </div>
+
+                                            <div className="varga-details">
+                                                <div className="result-card info-card">
+                                                    <h3 className="card-title"><Calendar size={18} /> Panchang</h3>
+                                                    <div className="panchang-grid">
+                                                        <div className="detail-item"><span>Vara</span> <strong>{chartData.panchang?.vara || 'N/A'}</strong></div>
+                                                        <div className="detail-item"><span>Tithi</span> <strong>{chartData.panchang?.tithi || 'N/A'}</strong></div>
+                                                        <div className="detail-item"><span>Nakshatra</span> <strong>{chartData.panchang?.nakshatra || 'N/A'}</strong></div>
+                                                        <div className="detail-item"><span>Yoga</span> <strong>{chartData.panchang?.yoga || 'N/A'}</strong></div>
+                                                        <div className="detail-item"><span>Karana</span> <strong>{chartData.panchang?.karana || 'N/A'}</strong></div>
+                                                        <div className="detail-item"><span>Lagna</span> <strong>{chartData.lagna?.name || 'N/A'}</strong></div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="result-card planetary-card">
+                                                    <h3 className="card-title"><Compass size={18} /> Planets</h3>
+                                                    <div className="planets-grid-mini">
+                                                        {chartData.planets && Object.entries(chartData.planets).map(([name, data]) => (
+                                                            <div key={name} className="planet-mini-row">
+                                                                <span className="p-short-name">{name.substring(0, 2)}</span>
+                                                                <div className="p-mini-data">
+                                                                    <span className="p-mini-sign">{data.rashi?.name || 'N/A'}</span>
+                                                                    <span className="p-mini-deg">{data.rashi?.formatted || 'N/A'}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         )}
-                    </main>
+
+                        {/* KP Tab - Krishnamurti Paddhati System */}
+                        {activeTab === 'kp' && chartData.kp && (
+                            <div className="kp-system-container">
+                                <div className="kp-layout">
+                                    {/* Left Side - Bhav Chalit Chart */}
+                                    <div className="bhav-chalit-section">
+                                        <h3 className="kp-section-title">Bhav Chalit Chart</h3>
+                                        <div className="bhav-chalit-chart">
+                                            <NorthIndianChart bhavChalit={chartData.kp.bhavChalit} />
+                                        </div>
+
+                                        {/* Ruling Planets */}
+                                        <div className="ruling-planets-section">
+                                            <h4 className="kp-subsection-title">Ruling Planets</h4>
+                                            <table className="kp-table ruling-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>--</th>
+                                                        <th>Sign Lord</th>
+                                                        <th>Star Lord</th>
+                                                        <th>Sub Lord</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Mo</td>
+                                                        <td>{chartData.kp.rulingPlanets.moon.signLord}</td>
+                                                        <td>{chartData.kp.rulingPlanets.moon.starLord}</td>
+                                                        <td>--</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Asc</td>
+                                                        <td>{chartData.kp.rulingPlanets.ascendant.signLord}</td>
+                                                        <td>{chartData.kp.rulingPlanets.ascendant.starLord}</td>
+                                                        <td>{chartData.kp.rulingPlanets.ascendant.subLord}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colSpan="3"><strong>Day Lord</strong></td>
+                                                        <td>{chartData.kp.rulingPlanets.dayLord}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    {/* Right Side - Tables */}
+                                    <div className="kp-tables-section">
+                                        {/* Planets Table */}
+                                        <div className="kp-table-container">
+                                            <h4 className="kp-subsection-title">Planets</h4>
+                                            <table className="kp-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Planets</th>
+                                                        <th>Cusp</th>
+                                                        <th>Sign</th>
+                                                        <th>Sign Lord</th>
+                                                        <th>Star Lord</th>
+                                                        <th>Sub Lord</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {chartData.kp.planets.map((planet, i) => (
+                                                        <tr key={i}>
+                                                            <td><strong>{planet.planet}</strong></td>
+                                                            <td>{planet.cusp}</td>
+                                                            <td>{planet.sign}</td>
+                                                            <td>{planet.signLord}</td>
+                                                            <td>{planet.starLord}</td>
+                                                            <td>{planet.subLord}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Cusps Table */}
+                                        <div className="kp-table-container">
+                                            <h4 className="kp-subsection-title">Cusps</h4>
+                                            <table className="kp-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Cusp</th>
+                                                        <th>Degree</th>
+                                                        <th>Sign</th>
+                                                        <th>Sign Lord</th>
+                                                        <th>Star Lord</th>
+                                                        <th>Sub Lord</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {chartData.kp.cusps.map((cusp, i) => (
+                                                        <tr key={i}>
+                                                            <td><strong>{cusp.cusp}</strong></td>
+                                                            <td>{cusp.degree}</td>
+                                                            <td>{cusp.sign}</td>
+                                                            <td>{cusp.signLord}</td>
+                                                            <td>{cusp.starLord}</td>
+                                                            <td>{cusp.subLord}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ashtakvarga Tab - Placeholder */}
+                        {activeTab === 'ashtakvarga' && <div className="placeholder-content">Ashtakvarga tab content coming soon...</div>}
+
+                        {/* Charts Tab - Secondary Charts */}
+                        {activeTab === 'charts' && (
+                            <div className="secondary-charts">
+                                <div className="result-card sub-chart">
+                                    <h3 className="card-title">Chandra Kundali</h3>
+                                    <div className="chart-wrapper-small">
+                                        <VargaChart houses={chartData.chandraHouses || []} />
+                                    </div>
+                                </div>
+                                <div className="result-card sub-chart">
+                                    <h3 className="card-title">Surya Kundali</h3>
+                                    <div className="chart-wrapper-small">
+                                        <VargaChart houses={chartData.suryaHouses || []} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Dasha Tab - Dasha Timeline */}
+                        {activeTab === 'dasha' && chartData.dashas && (
+                            <div className="result-card dasha-explorer-card">
+                                <div className="explorer-header">
+                                    <h3 className="card-title">Dasha Timeline</h3>
+                                    <div className="varga-tabs dasha-tabs">
+                                        {['vimshottari', 'yogini', 'chara'].map(system => (
+                                            <button
+                                                key={system}
+                                                onClick={() => {
+                                                    setActiveDashaSystem(system);
+                                                    setExpandedDasha(null);
+                                                }}
+                                                className={`varga-tab ${activeDashaSystem === system ? 'active' : ''}`}
+                                            >
+                                                {system.toUpperCase()}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="dasha-timeline-grid">
+                                    {chartData.dashas[activeDashaSystem]?.map((dasha, i) => (
+                                        <div key={i} className="dasha-node">
+                                            <div
+                                                className={`dasha-node-main ${expandedDasha === i ? 'expanded' : ''}`}
+                                                onClick={() => setExpandedDasha(expandedDasha === i ? null : i)}
+                                            >
+                                                <div className="node-icon">{dasha.planet.substring(0, 1)}</div>
+                                                <div className="node-content">
+                                                    <span className="node-planet">{dasha.planet}</span>
+                                                    <span className="node-date">{new Date(dasha.start).getFullYear()} - {new Date(dasha.end).getFullYear()}</span>
+                                                </div>
+                                                {activeDashaSystem === 'vimshottari' && <span className="node-plus">{expandedDasha === i ? '−' : '+'}</span>}
+                                            </div>
+
+                                            {expandedDasha === i && dasha.sub && (
+                                                <div className="node-sub-list">
+                                                    {dasha.sub.map((sub, si) => (
+                                                        <div key={si} className="node-sub-item">
+                                                            <span>{sub.planet}</span>
+                                                            <small>{new Date(sub.start).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</small>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Free Report Tab - AI Summary */}
+                        {activeTab === 'report' && chartData.aiSummary && (
+                            <div className="result-card ai-summary-card">
+                                <div className="ai-header">
+                                    <Sparkles className="text-gold" size={24} />
+                                    <h2 className="card-title">Cosmic Interpretation</h2>
+                                </div>
+                                <div className="ai-content">
+                                    {chartData.aiSummary.split('\n').map((para, i) => (
+                                        para.trim() && <p key={i}>{para}</p>
+                                    ))}
+                                </div>
+                                <div className="ai-footer">
+                                    <Info size={14} />
+                                    <span>AI insights based on your unique planetary configuration.</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
 
-const NorthIndianChart = ({ houses }) => {
+const VargaChart = ({ houses }) => {
     const getAbbr = (name) => {
         const map = {
             'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
@@ -335,9 +546,8 @@ const NorthIndianChart = ({ houses }) => {
             </defs>
             <style>{`
                 .chart-line { stroke: var(--primary); stroke-width: 2.5; fill: none; opacity: 0.8; }
-                .chart-line-inner { stroke: var(--accent-gold); stroke-width: 0.8; fill: none; opacity: 0.3; }
-                .house-num { fill: var(--accent-gold); font-size: 18px; font-weight: 900; filter: drop-shadow(0 0 5px var(--primary-glow)); }
-                .planet-tag { fill: #fff; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+                .house-num { fill: var(--accent-gold); font-size: 18px; font-weight: 900; }
+                .planet-tag { fill: #fff; font-size: 12px; font-weight: 800; }
                 .planet-deg-small { fill: var(--text-muted); font-size: 9px; font-weight: 600; }
             `}</style>
 
@@ -418,3 +628,4 @@ const getHouseCenter = (houseNum) => {
 };
 
 export default Kundli;
+

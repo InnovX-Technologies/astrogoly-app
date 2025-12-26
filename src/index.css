@@ -1,51 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* COSMIC DARK THEME (Planetary & Growth Focus) */
-  --bg-dark: #020205;
-  --bg-gradient: radial-gradient(circle at top right, #0a0a1a, #020205 80%);
-  --primary: #d4af37;
-  /* Jupiter Gold */
-  --primary-glow: rgba(212, 175, 55, 0.3);
-  --accent-passion: #f43f5e;
-  /* Mars Rose */
-  --accent-growth: #34d399;
-  /* Mercury Emerald */
-  --accent-gold: #fbbf24;
-  /* Sun Amber */
-  --glass: rgba(10, 10, 26, 0.8);
-  --glass-border: rgba(212, 175, 55, 0.15);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --nav-bg: rgba(2, 2, 5, 0.9);
-  --card-bg: rgba(15, 23, 42, 0.6);
-  --shadow-color: rgba(0, 0, 0, 0.5);
-}
-
-.light-theme {
-  /* SOLAR LIGHT THEME (80% Soft Ivory, 10% Gold/Amber, 10% Deep Slate) */
-  --bg-dark: #fafaf9;
-  /* Warm White / Stone 50 */
-  --bg-gradient: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
-  /* Sunlight Glow */
-  --primary: #b45309;
-  /* Deep Amber / Jupiter */
-  --primary-glow: rgba(180, 83, 9, 0.15);
-  --accent-passion: #e11d48;
-  /* Crimson / Mars */
-  --accent-growth: #059669;
-  /* Emeral / Mercury */
-  --accent-gold: #d97706;
-  /* Goldenrod / Sun */
-  --glass: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(180, 83, 9, 0.2);
-  --text-main: #0c0a09;
-  /* Near Black / Stone 950 */
-  --text-muted: #57534e;
-  /* Warm Slate / Stone 600 */
-  --nav-bg: rgba(255, 255, 255, 0.95);
+  /* ASTROTALK-INSPIRED THEME (Yellow-Black-White) */
+  --bg-dark: #1a1a1a;
+  --bg-gradient: linear-gradient(180deg, #212529 0%, #1a1a1a 100%);
+  --primary: #ffcc01;
+  /* Vibrant Yellow */
+  --primary-dark: #e6b800;
+  --primary-glow: rgba(255, 204, 1, 0.25);
+  --accent-black: #212529;
+  /* Deep Gray/Black */
+  --accent-dark: #0d0d0d;
+  --accent-light: #f8f9fa;
+  /* Pure White */
+  --accent-gray: #6c757d;
+  /* Medium Gray */
+  --glass: rgba(33, 37, 41, 0.85);
+  --glass-border: rgba(255, 204, 1, 0.2);
+  --text-main: #ffffff;
+  --text-muted: #adb5bd;
+  --text-dark: #212529;
+  --nav-bg: rgba(33, 37, 41, 0.98);
   --card-bg: #ffffff;
-  --shadow-color: rgba(180, 83, 9, 0.1);
+  --card-dark: #2a2e32;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --shadow-yellow: rgba(255, 204, 1, 0.3);
+  --border-light: #dee2e6;
+  --success: #28a745;
+  --danger: #dc3545;
+  /* AstroTalk Light Theme Colors */
+  --primary: #ffcc00;
+  --primary-dark: #e6b800;
+  --primary-glow: rgba(255, 204, 0, 0.15);
+
+  /* Light Theme Backgrounds */
+  --bg-main: #ffffff;
+  --bg-light: #f5f5f5;
+  --bg-dark: #333333;
+  --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+
+  /* Text Colors for Light Theme */
+  --text-main: #212121;
+  --text-dark: #000000;
+  --text-muted: #666666;
+  --text-light: #999999;
+
+  /* Card & UI Elements */
+  --card-bg: #ffffff;
+  --card-hover: #fafafa;
+  --border-light: #e0e0e0;
+  --border-medium: #cccccc;
+
+  /* Shadows */
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.12);
+  --shadow-strong: rgba(0, 0, 0, 0.16);
+  --shadow-yellow: rgba(255, 204, 0, 0.25);
+
+  /* Status Colors */
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+
+  /* Accent Colors */
+  --accent-light: #f8f9fa;
+  --accent-gray: #6c757d;
+  --accent-black: #212529;
+
+  /* Navigation */
+  --nav-bg: rgba(255, 255, 255, 0.98);
+  --nav-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Glass Effect */
+  --glass: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -55,8 +84,8 @@
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg-dark);
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg-main);
   background-image: var(--bg-gradient);
   color: var(--text-main);
   min-height: 100vh;
@@ -99,33 +128,39 @@ button {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent-gold));
-  color: #000 !important;
-  padding: 0.8rem 2rem;
-  border-radius: 50px;
+  background: var(--primary);
+  color: var(--text-dark) !important;
+  padding: 0.9rem 2.2rem;
+  border-radius: 8px;
   font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
+  box-shadow: 0 4px 12px var(--shadow-yellow);
 }
 
 .btn-primary:hover {
+  background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--primary-glow);
+  box-shadow: 0 6px 20px var(--shadow-yellow);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1.5px solid var(--primary);
-  color: var(--text-main);
-  padding: 0.7rem 1.8rem;
-  border-radius: 50px;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 0.95rem;
   transition: all 0.3s;
 }
 
 .btn-outline:hover {
   background: var(--primary);
-  color: #000;
+  color: var(--text-dark);
+  box-shadow: 0 4px 12px var(--shadow-yellow);
 }
 
 /* Typography */

@@ -61,7 +61,7 @@ const Footer = () => {
 
             <div className="footer-bottom">
                 <div className="container b-content">
-                    <p>© 2024 Astrogoly. All digital stardust reserved.</p>
+                    <p>© 2025 AstroNexa. All rights reserved to InnovX Technologies.</p>
                     <div className="b-links">
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>

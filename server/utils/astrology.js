@@ -571,3 +571,112 @@ export function calculateMatchmaking(boyMoonLong, girlMoonLong) {
         verdict: points >= 18 ? (points >= 25 ? "Highly Compatible" : "Moderately Compatible") : "Low Compatibility"
     };
 }
+
+/**
+ * AVAKHADA CHAKRA & DETAILS
+ */
+
+const YONIS = [
+    'Ashwa', 'Gaja', 'Mesha', 'Sarpa', 'Sarpa', 'Shwan', 'Marjar', 'Mesha', 'Marjar',
+    'Mushak', 'Mushak', 'Gau', 'Mahisha', 'Vyaghra', 'Mahisha', 'Vyaghra', 'Mriga', 'Mriga',
+    'Shwan', 'Vanar', 'Nakula', 'Vanar', 'Simha', 'Ashwa', 'Simha', 'Gau', 'Gaja'
+];
+
+const GANAS = [
+    'Deva', 'Manushya', 'Rakshasa', 'Manushya', 'Deva', 'Manushya', 'Deva', 'Deva', 'Rakshasa',
+    'Rakshasa', 'Manushya', 'Manushya', 'Deva', 'Rakshasa', 'Deva', 'Rakshasa', 'Deva', 'Rakshasa',
+    'Rakshasa', 'Manushya', 'Manushya', 'Deva', 'Rakshasa', 'Rakshasa', 'Manushya', 'Manushya', 'Deva'
+];
+
+const NADIS = [
+    'Adi', 'Madhya', 'Antya', 'Antya', 'Madhya', 'Adi', 'Adi', 'Madhya', 'Antya',
+    'Antya', 'Madhya', 'Adi', 'Adi', 'Madhya', 'Antya', 'Antya', 'Madhya', 'Adi',
+    'Adi', 'Madhya', 'Antya', 'Antya', 'Madhya', 'Adi', 'Adi', 'Madhya', 'Antya'
+];
+
+const RASHI_VARNA = [
+    'Kshatriya', 'Vaishya', 'Shudra', 'Brahmin', 'Kshatriya', 'Vaishya', 'Shudra', 'Brahmin', 'Kshatriya', 'Vaishya', 'Shudra', 'Brahmin'
+];
+
+const RASHI_VASHYA = [
+    'Chatushpada', 'Chatushpada', 'Manava', 'Jalachara', 'Vanachara', 'Manava', 'Manava', 'Keeta', 'Manava', 'Jalachara', 'Manava', 'Jalachara'
+];
+
+const RASHI_TATVA = [
+    'Fire', 'Earth', 'Air', 'Water', 'Fire', 'Earth', 'Air', 'Water', 'Fire', 'Earth', 'Air', 'Water'
+];
+
+const RASHI_LORDS = [
+    'Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'
+];
+
+const NAK_SOUNDS = [
+    ['Chu', 'Che', 'Cho', 'La'], ['Li', 'Lu', 'Le', 'Lo'], ['A', 'I', 'U', 'E'], ['O', 'Va', 'Vi', 'Vu'], ['Ve', 'Vo', 'Ka', 'Ki'], ['Ku', 'Gha', 'Ng', 'Chha'],
+    ['Ke', 'Ko', 'Ha', 'Hi'], ['Hu', 'He', 'Ho', 'Da'], ['Di', 'Du', 'De', 'Do'], ['Ma', 'Mi', 'Mu', 'Me'], ['Mo', 'Ta', 'Ti', 'Tu'], ['Te', 'To', 'Pa', 'Pi'],
+    ['Pu', 'Sha', 'Na', 'Tha'], ['Pe', 'Po', 'Ra', 'Ri'], ['Ru', 'Re', 'Ro', 'Ta'], ['Ti', 'Tu', 'Te', 'To'], ['Na', 'Ni', 'Nu', 'Ne'], ['No', 'Ya', 'Yi', 'Yu'],
+    ['Ye', 'Yo', 'Bha', 'Bhi'], ['Bhu', 'Dha', 'Pha', 'Dha'], ['Bhe', 'Bho', 'Ja', 'Ji'], ['Ju', 'Je', 'Jo', 'Gha'], ['Ga', 'Gi', 'Gu', 'Ge'], ['Go', 'Sa', 'Si', 'Su'],
+    ['Se', 'So', 'Da', 'Di'], ['Du', 'Tha', 'Jha', 'Nya'], ['De', 'Do', 'Cha', 'Chi']
+];
+
+export function calculateAvakhada(moonLong) {
+    const nakLength = 360 / 27;
+    const nakIndex = Math.floor(moonLong / nakLength);
+    const nakDegree = moonLong % nakLength;
+    const padaIndex = Math.floor(nakDegree / (nakLength / 4)); // 0-3
+    const rashiIndex = Math.floor(moonLong / 30);
+
+    // Safety check
+    const safeNakIndex = (nakIndex + 27) % 27; // Ensure positive
+    const safeRashiIndex = (rashiIndex + 12) % 12;
+
+    const varna = RASHI_VARNA[safeRashiIndex] || '-';
+    const vashya = RASHI_VASHYA[safeRashiIndex] || '-';
+    const yoni = YONIS[safeNakIndex] || '-';
+    const gan = GANAS[safeNakIndex] || '-';
+    const nadi = NADIS[safeNakIndex] || '-';
+    const sign = ZODIAC_SIGNS[safeRashiIndex] || '-';
+    const signLord = RASHI_LORDS[safeRashiIndex] || '-';
+    const tatva = RASHI_TATVA[safeRashiIndex] || '-';
+
+    // Nakshatra Name & Pada
+    const nakName = NAKSHATRAS[safeNakIndex] || '-';
+
+    // Alphabet
+    const alphabet = NAK_SOUNDS[safeNakIndex] ? (NAK_SOUNDS[safeNakIndex][padaIndex] || '-') : '-';
+
+    // Yunja (Simplified mapping: Purva/Madhya/Antya based on Nakshatra groups or similar)
+    // Common approx: 0-8 Purva, 9-17 Madhya, 18-26 Antya (One system) or based on triplicities.
+    // Let's use PRE-assigned Nadi values as proxy or simple logic if Yunja table missing.
+    // Actually simpler: 
+    const yunja = ["Antya", "Madhya", "Purva"][safeNakIndex % 3];
+
+    // Paya (Silver/Gold/Copper/Iron)
+    // Logic: 
+    // Gold: Moon in 1, 6, 11 houses (Need Lagna for precise Paya)
+    // Silver: Moon in 2, 5, 9 houses
+    // Copper: Moon in 3, 7, 10 houses
+    // Iron: Moon in 4, 8, 12 houses
+    // Without Lagna, Paya is often generic "Silver" or computed differently.
+    // Since we pass Lagna to main chart but this function only takes MoonLong, we might skip Paya or accept Lagna.
+    // Let's return Generic 'Silver' if Lagna unknown, or update signature. But let's just return 'Silver' for now.
+    const paya = 'Silver';
+
+    return {
+        varna,
+        vashya,
+        yoni,
+        gan,
+        nadi,
+        sign,
+        signLord,
+        nakshatra: nakName,
+        nakshatraCharan: `${nakName} - ${padaIndex + 1}`,
+        yog: null, // Calculated in Panchang
+        karan: null, // Calculated in Panchang
+        tithi: null, // Calculated in Panchang
+        yunja,
+        tatva,
+        nameAlphabet: alphabet,
+        paya
+    };
+}

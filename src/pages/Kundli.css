@@ -1,11 +1,74 @@
 .kundli-container {
-    padding-top: 120px;
-    padding-bottom: 80px;
+    padding-top: 220px;
+    padding-bottom: 60px;
     min-height: 100vh;
     background: var(--bg-gradient);
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Centered Form Container */
+.kundli-form-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.kundli-header-centered {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.kundli-header-centered h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #000000;
+    margin-bottom: 0.75rem;
+}
+
+.kundli-header-centered p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.kundli-form-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.kundli-form-centered {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Full-Width Results View */
+.kundli-results-view {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.results-content {
+    margin-top: 2rem;
+}
+
+.placeholder-content {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
 }
 
 .kundli-header {
@@ -22,111 +85,131 @@
 
 .kundli-header p {
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* Layout: Floating App Window */
-/* This mimics a desktop app window centered on screen */
+/* Layout: Standard Vertical Flow */
 .kundli-layout {
     display: flex;
-    width: 95%;
+    flex-direction: column;
+    width: 94%;
     max-width: 1400px;
-    height: 85vh;
-    /* Fixed height for the 'window' feel */
-    background: rgba(10, 10, 20, 0.6);
+    margin: 0 auto;
+    gap: 3rem;
+    position: relative;
+    height: auto;
+    border: none;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.kundli-layout::after {
+    display: none;
+    /* Remove the old border glow */
+}
+
+/* Form Section: Centered Card */
+.kundli-sidebar {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 32px;
-    overflow: hidden;
-    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 8px 24px var(--shadow-color);
     position: relative;
+    z-index: 10;
 }
 
-/* Decorative Border Glow */
-.kundli-layout::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 32px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+.kundli-side-scroll {
+    overflow: visible;
+    /* Removing scroll behavior */
 }
 
-/* Internal Sidebar (Left Pane) */
-.kundli-sidebar {
-    width: 380px;
-    flex-shrink: 0;
-    background: rgba(0, 0, 0, 0.3);
-    border-right: 1px solid var(--glass-border);
-    padding: 2.5rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Sidebar Scrollbar */
-.kundli-sidebar::-webkit-scrollbar {
-    width: 6px;
-}
-
-.kundli-sidebar::-webkit-scrollbar-thumb {
-    background: var(--glass-border);
-    border-radius: 3px;
-}
-
+/* Form Styling */
 .kundli-form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
+
+/* Full Width Inputs: Name and City */
+.form-group:has(input[name="name"]),
+.form-group:has(input[name="city"]) {
+    grid-column: span 2;
+}
+
+/* Fallback for :has support if needed - targeting by order based on JSX */
+/* 1st is Name, 2nd is City, 3rd is Date+Time Wrapper (Wait, let's check JSX structure) */
+/* Actually, let's just make input-row full width and handle children */
 
 .input-row {
     display: flex;
     gap: 1rem;
+    width: 100%;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
+    position: relative;
     flex: 1;
 }
 
+/* Force specific groups to full width if they aren't inside an input-row */
+.kundli-form>.form-group {
+    grid-column: span 2;
+}
+
+/* The distinct input-row (Date/Time) should also span full width, but its children split it */
+.kundli-form>.input-row {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Lat/Long row */
+.kundli-form>.input-row:last-of-type {
+    grid-template-columns: 1fr 1fr;
+}
+
+
 .form-group label {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 0.2rem;
 }
 
-/* Inputs: Sleek Dark Fields */
+/* Inputs: Large & Clean */
 .input-field {
     width: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    /* Darker for contrast */
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 1rem;
-    color: var(--text-main);
-    font-size: 0.95rem;
-    transition: all 0.3s;
+    background: var(--accent-light);
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-field:focus {
-    background: rgba(0, 0, 0, 0.8);
+    background: #ffffff;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-glow);
     outline: none;
 }
 
@@ -135,258 +218,285 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     color: var(--primary);
-    width: 48px;
+    width: 54px;
+    /* Match Input Height approx */
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     flex-shrink: 0;
 }
 
 .btn-geo:hover {
     background: var(--primary);
     color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
 }
 
 /* Generate Button */
 .btn-generate {
-    width: 100%;
+    grid-column: span 2;
     background: var(--primary);
-    color: #000;
+    color: var(--text-dark);
     font-weight: 800;
+    font-size: 1rem;
     padding: 1.2rem;
-    border-radius: 12px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     margin-top: 1rem;
     transition: all 0.3s;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px var(--shadow-yellow);
+    width: 100%;
 }
 
 .btn-generate:hover {
-    background: var(--accent-gold);
+    background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 6px 20px var(--shadow-yellow);
 }
 
-
-
-.btn-geo:hover {
-    background: var(--primary);
-    color: #000;
-}
-
-.btn-generate {
-    background: linear-gradient(135deg, var(--primary), var(--accent-gold));
-    color: #000;
-    font-weight: 900;
-    padding: 1.2rem 3rem;
-    border-radius: 100px;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    box-shadow: 0 10px 30px var(--primary-glow);
-    clip-path: none;
-}
-
-.btn-generate:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 50px var(--primary-glow);
-}
-
-
-
-.input-field:focus {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
-    /* Gold glow ring */
-    outline: none;
-    transform: translateX(4px);
-}
-
-/* Geo Button specific fix */
-.btn-geo {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--primary);
-    width: 100%;
-    padding: 0;
-    height: 52px;
-    /* Match typical input height */
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    cursor: pointer;
-    margin-top: 0;
-    /* Reset */
-}
-
-.btn-geo:hover {
-    background: var(--primary);
-    color: #000;
-    border-color: var(--primary);
-}
-
-/* Generate Button - Bottom Fixed or Pushed Down */
-.btn-generate {
-    margin-top: auto;
-    /* Push to bottom */
-    width: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent-gold));
-    color: #000;
-    font-weight: 900;
-    padding: 1.2rem;
-    border-radius: 16px;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-    clip-path: none;
-    /* Reset */
-}
-
-.btn-generate:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
-}
-
-/* Results Section (Right Pane) */
+/* Results Section */
 .results-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 3rem;
-    background: rgba(255, 255, 255, 0.01);
-    /* Subtle light tint */
-    position: relative;
-    /* Custom Scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: var(--glass-border) transparent;
+    width: 100%;
+    animation: fadeIn 0.8s ease-out;
+    padding: 0;
+    overflow: visible;
 }
 
-.results-area::-webkit-scrollbar {
-    width: 8px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.results-area::-webkit-scrollbar-thumb {
-    background: var(--glass-border);
-    border-radius: 4px;
-}
-
+/* --- MOSAIC GRID SYSTEM (Adapted) --- */
 .results-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
 }
 
+/* Empty State - Hide it because the form IS the main content now */
+.empty-state {
+    display: none;
+}
+
+/* Tabbed Navigation */
+/* Tabbed Navigation - AstroTalk Style */
+.kundli-tabs-container {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.kundli-tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.kundli-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.kundli-tab {
+    padding: 0.625rem 1.25rem;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.kundli-tab:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.kundli-tab.active {
+    background: #fbbf24;
+    color: #000000;
+    font-weight: 600;
+}
+
+/* Section Titles - Simple Text Header */
+.section-title {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    margin-top: 1.75rem;
+    padding: 0;
+    border-bottom: none;
+    letter-spacing: 0;
+    text-transform: none;
+    background: transparent;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* AI Summary Card */
+.ai-summary-card {
+    grid-column: span 12;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.ai-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    color: var(--primary);
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-content p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    font-size: 1.05rem;
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.ai-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+}
+
+/* Varga Explorer Panel */
 .varga-explorer-panel {
+    grid-column: span 12;
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 40px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 40px 100px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .explorer-header {
-    padding: 2.5rem;
+    padding: 1.5rem 2.5rem;
     border-bottom: 1px solid var(--glass-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
+    background: rgba(0, 0, 0, 0.2);
     flex-wrap: wrap;
 }
 
 .varga-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
+    margin: 0;
 }
 
 .varga-subtitle {
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .varga-tabs {
     display: flex;
-    gap: 0.8rem;
-    padding: 0.5rem;
-    background: rgba(0, 0, 0, 0.2);
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.4rem;
     border-radius: 100px;
-    border: 1px solid var(--glass-border);
     overflow-x: auto;
-    max-width: 100%;
-    scrollbar-width: none;
-    /* Firefox */
-}
-
-.varga-tabs::-webkit-scrollbar {
-    display: none;
 }
 
 .varga-tab {
-    padding: 10px 24px;
+    padding: 8px 20px;
     border-radius: 100px;
-    border: 1px solid transparent;
+    border: none;
     background: transparent;
     color: var(--text-muted);
-    font-weight: 700;
-    transition: all 0.3s;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
     white-space: nowrap;
-    font-size: 0.9rem;
-}
-
-.varga-tab:hover {
-    color: var(--text-main);
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .varga-tab.active {
     background: var(--primary);
-    color: #000;
-    box-shadow: 0 4px 15px var(--primary-glow);
-    font-weight: 800;
+    color: var(--text-dark);
+    box-shadow: 0 2px 10px var(--shadow-yellow);
 }
 
 .explorer-content {
-    display: flex;
-    flex-wrap: wrap;
-    background: var(--glass-border);
-    gap: 1px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    min-height: 550px;
 }
 
 .main-chart-card {
-    flex: 1 1 400px;
-    /* Grow, shrink, base width 400px */
-    padding: 2rem;
-    background: var(--card-bg);
+    padding: 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 400px;
-    gap: 2rem;
+    border-right: 1px solid var(--glass-border);
+    position: relative;
+    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.03), transparent 60%);
+}
+
+.chart-name-display {
+    position: absolute;
+    top: 2rem;
+    left: 2.5rem;
+    color: var(--primary);
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.5;
 }
 
 .chart-wrapper {
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     aspect-ratio: 1;
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -395,89 +505,52 @@
 .chart-svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.2));
-}
-
-.chart-name-display {
-    color: var(--primary);
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    text-align: center;
+    filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.4));
 }
 
 .varga-details {
-    flex: 1 1 320px;
-    /* Grow, shrink, base width 320px */
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    background: var(--bg-dark);
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .varga-details>.result-card {
-    border-radius: 0;
-    padding: 2.5rem;
-    flex: 1;
-    background: var(--card-bg);
+    padding: 2rem;
+    border-bottom: 1px solid var(--glass-border);
+    background: transparent;
 }
 
-.panchang-grid {
+.panchang-grid,
+.planets-grid-mini {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 1.2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
-.detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
+.detail-item,
+.planet-mini-row {
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
-    transition: transform 0.2s;
-}
-
-.detail-item:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
 }
 
 .detail-item span {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 0.5px;
 }
 
 .detail-item strong {
-    color: var(--text-main);
     font-size: 1rem;
-    font-weight: 600;
-}
-
-.planets-grid-mini {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-}
-
-.planet-mini-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.8rem 1.2rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 14px;
-    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    display: block;
 }
 
 .p-short-name {
-    font-weight: 900;
     color: var(--primary);
-    font-size: 1.1rem;
+    font-weight: 800;
     width: 24px;
 }
 
@@ -489,7 +562,6 @@
 .p-mini-sign {
     font-size: 0.85rem;
     color: #fff;
-    font-weight: 600;
 }
 
 .p-mini-deg {
@@ -498,51 +570,79 @@
     font-family: monospace;
 }
 
+/* Secondary Charts */
 .secondary-charts {
+    grid-column: span 12;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
-/* Dasha node System */
-.dasha-timeline-grid {
+.sub-chart {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-wrapper-small {
+    width: 70%;
+    max-width: 320px;
+    aspect-ratio: 1;
+}
+
+/* Dasha Section */
+.dasha-explorer-card {
+    grid-column: span 12;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.dasha-tabs {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.dasha-timeline-grid {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.2rem;
 }
 
 .dasha-node {
-    border-radius: 24px;
-    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--glass-border);
-    background: var(--bg-dark);
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 .dasha-node-main {
-    padding: 1.5rem 2rem;
+    padding: 1.2rem;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
     cursor: pointer;
-    transition: all 0.3s;
-}
-
-.dasha-node-main:hover {
-    background: var(--primary-glow);
 }
 
 .node-icon {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     background: var(--primary);
-    color: #000;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 900;
-    font-size: 1.2rem;
-    flex-shrink: 0;
+    font-weight: 800;
+    color: #000;
 }
 
 .node-content {
@@ -552,139 +652,412 @@
 }
 
 .node-planet {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 .node-date {
+    font-size: 0.8rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
 }
 
 .node-sub-list {
-    background: var(--card-bg);
-    padding: 1.5rem 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
     border-top: 1px solid var(--glass-border);
 }
 
-.node-sub-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
 .node-sub-item span {
-    font-weight: 700;
     color: var(--accent-gold);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .node-sub-item small {
+    display: block;
     color: var(--text-muted);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
 
-/* Responsive: Switch to Stacked Mobile View */
+/* Responsive */
 @media (max-width: 1024px) {
-    .kundli-layout {
-        flex-direction: column;
-        height: auto;
-        /* Allow full height scrolling */
-        border-radius: 0;
-        width: 100%;
-        border: none;
+    .explorer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .main-chart-card {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .varga-details {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .varga-details>.result-card {
+        flex: 1;
+        min-width: 300px;
+        border-bottom: none;
+        border-right: 1px solid var(--glass-border);
+    }
+}
+
+@media (max-width: 768px) {
+    .kundli-header h1 {
+        font-size: 2.2rem;
     }
 
     .kundli-sidebar {
-        width: 100%;
-        flex-shrink: 0;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--glass-border);
-        overflow: visible;
+        padding: 1.5rem;
     }
 
     .kundli-form {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 
-    .results-area {
-        overflow: visible;
-        padding: 2rem 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .kundli-container {
-        padding-top: 100px;
-        padding-bottom: 40px;
+    .kundli-form>.form-group,
+    .kundli-form>.input-row {
+        grid-column: span 1;
     }
 
-    .kundli-header h1 {
-        font-size: 2.5rem;
-    }
-
-    .input-row {
-        flex-direction: column;
+    /* Stack input row children too */
+    .kundli-form>.input-row {
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
 
     .btn-generate {
-        margin-top: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .kundli-container {
-        padding-top: 100px;
+        grid-column: span 1;
     }
 
-    .kundli-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .kundli-form>* {
-        grid-column: auto;
-        /* Reset grid */
-    }
-
-    .input-row {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .btn-generate {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .varga-title {
-        font-size: 1.6rem;
+    .secondary-charts {
+        grid-template-columns: 1fr;
     }
 
     .explorer-header {
-        padding: 1.5rem;
         flex-direction: column;
         align-items: flex-start;
+        gap: 1rem;
     }
 
     .varga-tabs {
         width: 100%;
+        overflow-x: auto;
     }
 
-    .main-chart-card {
-        min-height: auto;
+    .varga-details {
+        flex-direction: column;
     }
 
-    .panchang-grid,
-    .planets-grid-mini {
-        grid-template-columns: 1fr 1fr;
+    .varga-details>.result-card {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+    }
+}
+
+/* Basic & Avakhada Details Styling - Exact AstroTalk Match */
+.details-comparison-card {
+    padding: 0 !important;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.details-comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.details-column {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    overflow: visible;
+}
+
+.details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    align-items: center;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    transition: none;
+    background: transparent;
+    gap: 1.5rem;
+}
+
+.detail-row:first-child {
+    border-top: 1px solid #e5e7eb;
+}
+
+.detail-row:hover {
+    background: transparent;
+}
+
+.detail-row:last-child {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-row span {
+    color: #6b7280;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    text-transform: none;
+    text-align: left;
+}
+
+.detail-row strong {
+    color: #1f2937;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    text-align: left;
+}
+
+@media (max-width: 1024px) {
+    .details-comparison-grid {
+        gap: 1rem;
+    }
+
+    .detail-row {
+        grid-template-columns: 120px 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .details-comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .detail-row {
+        padding: 0.75rem 1rem;
+    }
+
+    .detail-row span,
+    .detail-row strong {
+        font-size: 0.8125rem;
+    }
+
+    .section-title {
+        padding: 0.875rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .details-column {
+        border-radius: 6px;
+    }
+
+    .detail-row {
+        padding: 0.625rem 0.875rem;
+    }
+
+    .section-title {
+        font-size: 0.8125rem;
+        padding: 0.75rem 0.875rem;
+    }
+}
+/* ========================================
+   KP SYSTEM STYLES (Jaganath Hora Layout)
+   ======================================== */
+
+.kp-system-container {
+    padding: 1.5rem;
+    background: #ffffff;
+}
+
+.kp-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Left Side - Bhav Chalit Chart */
+.bhav-chalit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.kp-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.bhav-chalit-chart {
+    background: #FFF8DC;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.bhav-chart-svg {
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Ruling Planets Section */
+.ruling-planets-section {
+    margin-top: 1rem;
+}
+
+.kp-subsection-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+    margin: 0 0 0.75rem 0;
+}
+
+/* KP Tables */
+.kp-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
+}
+
+.kp-table thead {
+    background: #FFFACD;
+    border-bottom: 2px solid #d1d5db;
+}
+
+.kp-table th {
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-right: 1px solid #e5e7eb;
+}
+
+.kp-table th:last-child {
+    border-right: none;
+}
+
+.kp-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.kp-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.kp-table td {
+    padding: 0.5rem 0.75rem;
+    color: #1f2937;
+    border-right: 1px solid #f3f4f6;
+}
+
+.kp-table td:last-child {
+    border-right: none;
+}
+
+.kp-table td strong {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Ruling Table Specific */
+.ruling-table {
+    font-size: 0.8125rem;
+}
+
+.ruling-table td {
+    text-align: center;
+}
+
+.ruling-table th {
+    text-align: center;
+}
+
+/* Right Side - Tables Section */
+.kp-tables-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.kp-table-container {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .kp-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .bhav-chalit-section {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .kp-system-container {
+        padding: 1rem;
+    }
+    
+    .kp-table {
+        font-size: 0.75rem;
+    }
+    
+    .kp-table th,
+    .kp-table td {
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .bhav-chalit-chart {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .kp-table {
+        font-size: 0.7rem;
+    }
+    
+    .kp-table th,
+    .kp-table td {
+        padding: 0.3rem 0.4rem;
+    }
+    
+    .kp-section-title {
+        font-size: 0.9rem;
+    }
+    
+    .kp-subsection-title {
+        font-size: 0.8rem;
     }
 }
