@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [22.x]
         # Run for Root, Backend, and Frontend directories
         work-dir: ['.', './backend', './frontend']
 
@@ -68,7 +68,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Run NPM Audit
         working-directory: ${{ matrix.work-dir }}
