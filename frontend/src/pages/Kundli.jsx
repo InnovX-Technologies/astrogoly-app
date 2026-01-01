@@ -174,12 +174,7 @@ const Kundli = () => {
                             >
                                 Ashtakvarga
                             </button>
-                            <button
-                                className={`kundli-tab ${activeTab === 'charts' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('charts')}
-                            >
-                                Charts
-                            </button>
+
                             <button
                                 className={`kundli-tab ${activeTab === 'dasha' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('dasha')}
@@ -254,69 +249,152 @@ const Kundli = () => {
 
                         {/* Kundli Tab - Varga Explorer */}
                         {activeTab === 'kundli' && chartData.vargas && (
-                            <div className="varga-explorer-panel">
-                                <div className="explorer-header">
-                                    <div className="varga-title-group">
-                                        <h2 className="varga-title">Varga Explorer</h2>
-                                        <p className="varga-subtitle">Divisional Chart Analysis</p>
+                            <div className="kundli-tab-content">
+                                <div className="varga-explorer-panel">
+                                    <div className="explorer-header">
+                                        <div className="varga-title-group">
+                                            <h2 className="varga-title">Varga Explorer</h2>
+                                            <p className="varga-subtitle">Divisional Chart Analysis</p>
+                                        </div>
+                                        <div className="varga-tabs">
+                                            {Object.keys(chartData.vargas).map(key => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setActiveVarga(key)}
+                                                    className={`varga-tab ${activeVarga === key ? 'active' : ''}`}
+                                                >
+                                                    {key.toUpperCase()}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="varga-tabs secondary-chart-tabs" style={{ marginTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '0.5rem' }}>
+                                            {[
+                                                { label: 'Lagna', key: 'd1' },
+                                                { label: 'Navamansa', key: 'd9' },
+                                                { label: 'Chalit', key: 'chalit' },
+                                                { label: 'Chandra', key: 'chandra' },
+                                                { label: 'Surya', key: 'surya' }
+                                            ].map(item => (
+                                                <button
+                                                    key={item.key}
+                                                    onClick={() => setActiveVarga(item.key)}
+                                                    className={`varga-tab ${activeVarga === item.key ? 'active' : ''}`}
+                                                >
+                                                    {item.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="varga-tabs">
-                                        {Object.keys(chartData.vargas).map(key => (
-                                            <button
-                                                key={key}
-                                                onClick={() => setActiveVarga(key)}
-                                                className={`varga-tab ${activeVarga === key ? 'active' : ''}`}
-                                            >
-                                                {key.toUpperCase()}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
 
-                                <div className="explorer-content">
-                                    {chartData.vargas[activeVarga] && (
-                                        <>
-                                            <div className="main-chart-card">
-                                                <h3 className="chart-name-display">{chartData.vargas[activeVarga].name}</h3>
-                                                <div className="chart-wrapper">
-                                                    <VargaChart houses={chartData.vargas[activeVarga].houses} />
+                                    <div className="explorer-content">
+                                        {/* Dynamic Chart Rendering */}
+                                        <div className="main-chart-card">
+                                            <h3 className="chart-name-display">
+                                                {activeVarga === 'chalit' ? 'Bhav Chalit Chart' :
+                                                    activeVarga === 'chandra' ? 'Chandra Kundali (Moon Chart)' :
+                                                        activeVarga === 'surya' ? 'Surya Kundali (Sun Chart)' :
+                                                            (chartData.vargas[activeVarga]?.name || 'Chart')}
+                                            </h3>
+                                            <div className="chart-wrapper">
+                                                {activeVarga === 'chalit' ? (
+                                                    <NorthIndianChart bhavChalit={chartData.kp?.bhavChalit || []} />
+                                                ) : activeVarga === 'chandra' ? (
+                                                    <VargaChart houses={chartData.chandraHouses || []} showDegree={true} />
+                                                ) : activeVarga === 'surya' ? (
+                                                    <VargaChart houses={chartData.suryaHouses || []} showDegree={true} />
+                                                ) : chartData.vargas[activeVarga] ? (
+                                                    <VargaChart
+                                                        houses={chartData.vargas[activeVarga].houses}
+                                                        showDegree={['d1'].includes(activeVarga)}
+                                                    />
+                                                ) : (
+                                                    <div>Chart data unavailable</div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="varga-details">
+                                            <div className="result-card info-card">
+                                                <h3 className="card-title"><Calendar size={18} /> Panchang</h3>
+                                                <div className="panchang-grid">
+                                                    <div className="detail-item"><span>Vara</span> <strong>{chartData.panchang?.vara || 'N/A'}</strong></div>
+                                                    <div className="detail-item"><span>Tithi</span> <strong>{chartData.panchang?.tithi || 'N/A'}</strong></div>
+                                                    <div className="detail-item"><span>Nakshatra</span> <strong>{chartData.panchang?.nakshatra || 'N/A'}</strong></div>
+                                                    <div className="detail-item"><span>Yoga</span> <strong>{chartData.panchang?.yoga || 'N/A'}</strong></div>
+                                                    <div className="detail-item"><span>Karana</span> <strong>{chartData.panchang?.karana || 'N/A'}</strong></div>
+                                                    <div className="detail-item"><span>Lagna</span> <strong>{chartData.lagna?.name || 'N/A'}</strong></div>
                                                 </div>
                                             </div>
 
-                                            <div className="varga-details">
-                                                <div className="result-card info-card">
-                                                    <h3 className="card-title"><Calendar size={18} /> Panchang</h3>
-                                                    <div className="panchang-grid">
-                                                        <div className="detail-item"><span>Vara</span> <strong>{chartData.panchang?.vara || 'N/A'}</strong></div>
-                                                        <div className="detail-item"><span>Tithi</span> <strong>{chartData.panchang?.tithi || 'N/A'}</strong></div>
-                                                        <div className="detail-item"><span>Nakshatra</span> <strong>{chartData.panchang?.nakshatra || 'N/A'}</strong></div>
-                                                        <div className="detail-item"><span>Yoga</span> <strong>{chartData.panchang?.yoga || 'N/A'}</strong></div>
-                                                        <div className="detail-item"><span>Karana</span> <strong>{chartData.panchang?.karana || 'N/A'}</strong></div>
-                                                        <div className="detail-item"><span>Lagna</span> <strong>{chartData.lagna?.name || 'N/A'}</strong></div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="result-card planetary-card">
-                                                    <h3 className="card-title"><Compass size={18} /> Planets</h3>
-                                                    <div className="planets-grid-mini">
-                                                        {chartData.planets && Object.entries(chartData.planets).map(([name, data]) => (
-                                                            <div key={name} className="planet-mini-row">
-                                                                <span className="p-short-name">{name.substring(0, 2)}</span>
-                                                                <div className="p-mini-data">
-                                                                    <span className="p-mini-sign">{data.rashi?.name || 'N/A'}</span>
-                                                                    <span className="p-mini-deg">{data.rashi?.formatted || 'N/A'}</span>
-                                                                </div>
+                                            <div className="result-card planetary-card">
+                                                <h3 className="card-title"><Compass size={18} /> Planets</h3>
+                                                <div className="planets-grid-mini">
+                                                    {chartData.planets && Object.entries(chartData.planets).map(([name, data]) => (
+                                                        <div key={name} className="planet-mini-row">
+                                                            <span className="p-short-name">{name.substring(0, 2)}</span>
+                                                            <div className="p-mini-data">
+                                                                <span className="p-mini-sign">{data.rashi?.name || 'N/A'}</span>
+                                                                <span className="p-mini-deg">{data.rashi?.formatted || 'N/A'}</span>
                                                             </div>
-                                                        ))}
-                                                    </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </>
-                                    )}
+                                        </div>
+                                    </div> {/* End explorer-content */}
+
+                                    {/* Detailed Planetary Table - Full Width */}
+                                    <div className="planetary-details-section" style={{ padding: '0 2rem 2rem 2rem' }}>
+
+
+                                        <div className="result-card planetary-details-table-card">
+                                            <h3 className="card-title"><Compass size={18} /> Planetary Status & Details</h3>
+                                            <div className="table-responsive">
+                                                <table className="kp-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Planet</th>
+                                                            <th>Sign</th>
+                                                            <th>Sign Lord</th>
+                                                            <th>Nakshatra</th>
+                                                            <th>Naksh Lord</th>
+                                                            <th>Degree</th>
+                                                            <th>Retro(R)</th>
+                                                            <th>Combust</th>
+                                                            <th>Avastha</th>
+                                                            <th>House</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {chartData.planets && Object.entries(chartData.planets).map(([name, data]) => {
+                                                            const lagnaIdx = chartData.lagna?.index || 0;
+                                                            const planetIdx = data.rashi.index;
+                                                            const house = (planetIdx - lagnaIdx + 12) % 12 + 1;
+                                                            return (
+                                                                <tr key={name}>
+                                                                    <td><strong>{name}</strong></td>
+                                                                    <td>{data.rashi.name}</td>
+                                                                    <td>{data.signLord || '-'}</td>
+                                                                    <td>{data.nakshatra.name}</td>
+                                                                    <td>{data.nakLord || '-'}</td>
+                                                                    <td>{data.rashi.formatted}</td>
+                                                                    <td style={{ color: data.isRetrograde ? 'red' : 'inherit' }}>{data.isRetrograde ? 'Retro' : 'Direct'}</td>
+                                                                    <td style={{ color: data.isCombust ? 'red' : 'inherit' }}>{data.isCombust ? 'Yes' : 'No'}</td>
+                                                                    <td>{data.avastha || '-'}</td>
+                                                                    <td>{house}</td>
+                                                                    <td>{data.status || '-'}</td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
-
                         {/* KP Tab - Krishnamurti Paddhati System */}
                         {activeTab === 'kp' && chartData.kp && (
                             <div className="kp-system-container">
@@ -429,23 +507,7 @@ const Kundli = () => {
                         {/* Ashtakvarga Tab - Placeholder */}
                         {activeTab === 'ashtakvarga' && <div className="placeholder-content">Ashtakvarga tab content coming soon...</div>}
 
-                        {/* Charts Tab - Secondary Charts */}
-                        {activeTab === 'charts' && (
-                            <div className="secondary-charts">
-                                <div className="result-card sub-chart">
-                                    <h3 className="card-title">Chandra Kundali</h3>
-                                    <div className="chart-wrapper-small">
-                                        <VargaChart houses={chartData.chandraHouses || []} />
-                                    </div>
-                                </div>
-                                <div className="result-card sub-chart">
-                                    <h3 className="card-title">Surya Kundali</h3>
-                                    <div className="chart-wrapper-small">
-                                        <VargaChart houses={chartData.suryaHouses || []} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+
 
                         {/* Dasha Tab - Dasha Timeline */}
                         {activeTab === 'dasha' && chartData.dashas && (
@@ -519,18 +581,36 @@ const Kundli = () => {
                         )}
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 
-const VargaChart = ({ houses }) => {
+const VargaChart = ({ houses, showDegree = false }) => {
     const getAbbr = (name) => {
         const map = {
             'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
-            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra', 'Ketu': 'Ke'
+            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra', 'Ketu': 'Ke',
+            'Uranus': 'Ur', 'Neptune': 'Ne', 'Pluto': 'Pl', 'Ascendant': 'Asc'
         };
         return map[name] || name.substring(0, 2);
+    };
+
+    const planetColors = {
+        'Sun': '#D84315',      // Deep Orange
+        'Moon': '#1A237E',     // Deep Indigo
+        'Mars': '#B71C1C',     // Red
+        'Mercury': '#1B5E20',  // Dark Green
+        'Jupiter': '#F57F17',  // Dark Gold
+        'Venus': '#880E4F',    // Deep Pink
+        'Saturn': '#263238',   // Blue Grey
+        'Rahu': '#212121',     // Almost Black
+        'Ketu': '#3E2723',     // Dark Brown
+        'Uranus': '#0097A7',   // Cyan Dark
+        'Neptune': '#1565C0',  // Blue Dark
+        'Pluto': '#455A64',     // Blue Grey Dark
+        'Ascendant': '#000000' // Black
     };
 
     return (
@@ -545,9 +625,9 @@ const VargaChart = ({ houses }) => {
                 </filter>
             </defs>
             <style>{`
-                .chart-line { stroke: var(--primary); stroke-width: 2.5; fill: none; opacity: 0.8; }
-                .house-num { fill: var(--accent-gold); font-size: 18px; font-weight: 900; }
-                .planet-tag { fill: #fff; font-size: 12px; font-weight: 800; }
+                .chart-line { stroke: var(--primary); stroke-width: 1.5; fill: none; opacity: 0.9; }
+                .house-num { fill: var(--text-muted); font-size: 14px; font-weight: 700; opacity: 0.7; }
+                .planet-tag { font-size: 11px; font-weight: 700; }
                 .planet-deg-small { fill: var(--text-muted); font-size: 9px; font-weight: 600; }
             `}</style>
 
@@ -560,45 +640,62 @@ const VargaChart = ({ houses }) => {
             <line x1="400" y1="200" x2="200" y2="0" className="chart-line" />
 
             {houses.map((house, i) => {
-                const houseNum = i + 1;
-                const center = getHouseCenter(houseNum);
+                const pos = getHouseCenter(i + 1);
                 const planets = house.planets || [];
                 const planetCount = planets.length;
 
-                const cols = planetCount > 3 ? 2 : 1;
-                const rows = Math.ceil(planetCount / cols);
-                const planetHeight = 22;
-                const numberHeight = 24;
-                const totalHeight = (rows * planetHeight) + numberHeight + 8;
-
-                const isSideTriangle = [3, 5, 9, 11].includes(houseNum);
-                const xBase = isSideTriangle ? (houseNum === 3 || houseNum === 5 ? center.x + 10 : center.x - 10) : center.x;
+                // Identify triangles to force early crowding logic
+                // Indices are 1-based here (house numbers)
+                // Triangles: 2, 3, 5, 6, 8, 9, 11, 12
+                const isTriangle = [2, 3, 5, 6, 8, 9, 11, 12].includes(i + 1);
+                const isCrowded = planetCount > 3 || (planetCount > 2 && isTriangle);
 
                 return (
                     <g key={i}>
                         {planets.map((p, pi) => {
-                            const colIndex = pi % cols;
-                            const rowIndex = Math.floor(pi / cols);
-                            const xOffset = cols > 1 ? (colIndex === 0 ? -22 : 22) : 0;
-                            const y = center.y - (totalHeight / 2) + (rowIndex * planetHeight) + 14;
+                            let xOff = 0;
+                            let dy = 13;
+                            let yOff = 0;
+
+                            if (isCrowded) {
+                                const col = pi % 2;
+                                const row = Math.floor(pi / 2);
+                                xOff = col === 0 ? -16 : 16;
+                                yOff = row * dy;
+                            } else {
+                                yOff = pi * dy;
+                            }
+
+                            const rows = isCrowded ? Math.ceil(planetCount / 2) : planetCount;
+                            const totalHeight = (rows * dy);
+                            const y = pos.y - (totalHeight / 2) + yOff + (dy / 2);
+
+                            const pColor = planetColors[p.name] || '#333';
 
                             return (
                                 <g key={pi}>
-                                    <text x={xBase + xOffset} y={y} className="planet-tag" textAnchor="middle">
+                                    <text
+                                        x={pos.x + xOff}
+                                        y={y}
+                                        className="planet-tag"
+                                        textAnchor="middle"
+                                        style={{ fill: pColor }}
+                                    >
                                         {getAbbr(p.name)}
-                                    </text>
-                                    <text x={xBase + xOffset} y={y + 9} className="planet-deg-small" textAnchor="middle">
-                                        {Math.floor(p.degree)}°
+                                        {p.isRetrograde && <tspan fill="red" fontSize="9px" dy="-4">®</tspan>}
+                                        {showDegree && <tspan x={pos.x + xOff} dy="12" className="planet-deg-small">{p.degree ? `${Math.floor(p.degree)}°` : ''}</tspan>}
                                     </text>
                                 </g>
                             );
                         })}
 
+                        {/* House Number Position in Corner */}
                         <text
-                            x={xBase}
-                            y={center.y + (totalHeight / 2) - 4}
+                            x={pos.numX}
+                            y={pos.numY}
                             className="house-num"
                             textAnchor="middle"
+                            dominantBaseline="middle"
                         >
                             {house.rashi + 1}
                         </text>
@@ -610,21 +707,39 @@ const VargaChart = ({ houses }) => {
 };
 
 const getHouseCenter = (houseNum) => {
+    // Centers for planets
     const centers = {
-        1: { x: 200, y: 100 },
-        2: { x: 100, y: 40 },
-        3: { x: 40, y: 100 },
-        4: { x: 100, y: 200 },
-        5: { x: 40, y: 300 },
-        6: { x: 100, y: 360 },
-        7: { x: 200, y: 300 },
-        8: { x: 300, y: 360 },
-        9: { x: 360, y: 300 },
-        10: { x: 300, y: 200 },
-        11: { x: 360, y: 100 },
-        12: { x: 300, y: 40 }
+        1: { x: 200, y: 90 },       // Top Diamond
+        2: { x: 90, y: 40 },        // Top Left Triangle
+        3: { x: 40, y: 90 },        // Left Top Triangle
+        4: { x: 100, y: 200 },      // Left Diamond
+        5: { x: 40, y: 310 },       // Left Bottom Triangle
+        6: { x: 90, y: 360 },       // Bottom Left Triangle
+        7: { x: 200, y: 310 },      // Bottom Diamond
+        8: { x: 310, y: 360 },      // Bottom Right Triangle
+        9: { x: 360, y: 310 },      // Right Bottom Triangle
+        10: { x: 300, y: 200 },     // Right Diamond
+        11: { x: 360, y: 90 },      // Right Top Triangle
+        12: { x: 310, y: 40 }       // Top Right Triangle
     };
-    return centers[houseNum];
+
+    // Safe House Number Positions (Corners)
+    const numPos = {
+        1: { x: 200, y: 155 },
+        2: { x: 45, y: 15 },
+        3: { x: 15, y: 45 },
+        4: { x: 160, y: 200 },
+        5: { x: 15, y: 355 },
+        6: { x: 45, y: 385 },
+        7: { x: 200, y: 245 },
+        8: { x: 355, y: 385 },
+        9: { x: 385, y: 355 },
+        10: { x: 240, y: 200 },
+        11: { x: 385, y: 45 },
+        12: { x: 355, y: 15 }
+    };
+
+    return { ...centers[houseNum], numX: numPos[houseNum].x, numY: numPos[houseNum].y };
 };
 
 export default Kundli;

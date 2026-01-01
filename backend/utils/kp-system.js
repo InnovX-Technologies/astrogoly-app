@@ -67,7 +67,8 @@ const PLANET_ABBR = {
     'Venus': 'Ve',
     'Saturn': 'Sa',
     'Rahu': 'Ra',
-    'Ketu': 'Ke'
+    'Ketu': 'Ke',
+    'Ascendant': 'Asc'
 };
 
 // Get Nakshatra (Star) Lord
@@ -152,7 +153,7 @@ export function calculateKPCusps(lagnaLongitude) {
 export function calculateKPPlanets(planets) {
     const kpPlanets = [];
 
-    const planetNames = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Uranus', 'Neptune', 'Pluto'];
+    const planetNames = ['Ascendant', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Uranus', 'Neptune', 'Pluto'];
 
     planetNames.forEach(name => {
         if (planets[name]) {
@@ -235,7 +236,8 @@ export function calculateBhavChalit(lagnaLongitude, planets) {
             if (inHouse) {
                 planetsInHouse.push({
                     name: PLANET_ABBR[name] || name,
-                    degree: (pLong % 30).toFixed(2)
+                    degree: (pLong % 30).toFixed(2),
+                    isRetrograde: data.isRetrograde
                 });
             }
         });

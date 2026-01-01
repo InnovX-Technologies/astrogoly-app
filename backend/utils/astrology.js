@@ -10,6 +10,8 @@ const ZODIAC_SIGNS = [
     'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
 ];
 
+const NAK_LORDS_ORDER = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'];
+
 const NAKSHATRAS = [
     'Ashwini', 'Bharani', 'Krittika', 'Rohini', 'Mrigashira', 'Ardra', 'Punarvasu', 'Pushya', 'Ashlesha',
     'Magha', 'Purva Phalguni', 'Uttara Phalguni', 'Hasta', 'Chitra', 'Swati', 'Vishakha', 'Anuradha', 'Jyeshtha',
@@ -116,11 +118,16 @@ export function calculateLagna(date, lat, lon) {
 /**
  * Get all planetary positions.
  */
+/**
+ * Get all planetary positions with detailed status.
+ */
 export function getPlanetaryPositions(date) {
-    const bodies = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'];
+    // Including Outer Planets as requested
+    const bodies = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
     const ayanamsa = getAyanamsa(date);
     const positions = {};
 
+    // 1. Calculate Positions first
     bodies.forEach(body => {
         // Position at T
         const vec1 = Astronomy.GeoVector(body, date, true);
@@ -136,17 +143,18 @@ export function getPlanetaryPositions(date) {
         if (velocity < -180) velocity += 360;
 
         const siderealLong = toSidereal(tropicalLong1, ayanamsa);
+        const rashi = getRashiInfo(siderealLong);
+        const nakshatra = getNakshatraInfo(siderealLong);
 
         positions[body] = {
             longitude: siderealLong,
-            rashi: getRashiInfo(siderealLong),
-            nakshatra: getNakshatraInfo(siderealLong),
+            rashi: rashi,
+            nakshatra: nakshatra,
             isRetrograde: velocity < 0
         };
     });
 
-    // Calculate Rahu (North Node)
-    // Mean Rahu Calculation
+    // 2. Calculate Rahu/Ketu
     const time = Astronomy.MakeTime(date);
     const T = time.ut / 36525.0;
     let rahuTropical = 125.04452 - (1934.136261 * T) + (0.0020708 * T * T);
@@ -160,7 +168,7 @@ export function getPlanetaryPositions(date) {
         longitude: rahuSidereal,
         rashi: getRashiInfo(rahuSidereal),
         nakshatra: getNakshatraInfo(rahuSidereal),
-        isRetrograde: true // Rahu/Ketu are always retrograde in Mean calculation
+        isRetrograde: true
     };
 
     positions['Ketu'] = {
@@ -169,6 +177,209 @@ export function getPlanetaryPositions(date) {
         nakshatra: getNakshatraInfo(ketuSidereal),
         isRetrograde: true
     };
+
+    // Lords Mapping
+    // NAK_LORDS_ORDER is at top level
+
+    // Dignity & Relationships
+    const EXALTATION = {
+        'Sun': 'Aries', 'Moon': 'Taurus', 'Mars': 'Capricorn', 'Mercury': 'Virgo',
+        'Jupiter': 'Cancer', 'Venus': 'Pisces', 'Saturn': 'Libra',
+        'Rahu': 'Taurus', 'Ketu': 'Scorpio',
+        'Uranus': 'Scorpio', 'Neptune': 'Cancer', 'Pluto': 'Pisces' // Modern assignments
+    };
+
+    const DEBILITATION = {
+        'Sun': 'Libra', 'Moon': 'Scorpio', 'Mars': 'Cancer', 'Mercury': 'Pisces',
+        'Jupiter': 'Capricorn', 'Venus': 'Virgo', 'Saturn': 'Aries',
+        'Rahu': 'Scorpio', 'Ketu': 'Taurus',
+        'Uranus': 'Taurus', 'Neptune': 'Capricorn', 'Pluto': 'Virgo'
+    };
+
+    // Own Signs are derived from RASHI_LORDS mapping, but for quick lookup:
+    // Aries(Mars), Taurus(Venus), Gemini(Mer), Cancer(Moon), Leo(Sun), Virgo(Mer)
+    // Libra(Ven), Scorpio(Mars), Sag(Jup), Cap(Sat), Aqu(Sat), Pis(Jup)
+
+    const NATURAL_RELATIONSHIPS = {
+        'Sun': { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn', 'Rahu', 'Ketu'] },
+        'Moon': { friends: ['Sun', 'Mercury'], enemies: ['Rahu', 'Ketu'] },
+        'Mars': { friends: ['Sun', 'Moon', 'Jupiter'], enemies: ['Mercury', 'Rahu', 'Ketu'] },
+        'Mercury': { friends: ['Sun', 'Venus'], enemies: ['Moon'] },
+        'Jupiter': { friends: ['Sun', 'Moon', 'Mars'], enemies: ['Mercury', 'Venus'] },
+        'Venus': { friends: ['Mercury', 'Saturn', 'Rahu', 'Ketu'], enemies: ['Sun', 'Moon'] },
+        'Saturn': { friends: ['Mercury', 'Venus', 'Rahu', 'Ketu'], enemies: ['Sun', 'Moon', 'Mars'] },
+        'Rahu': { friends: ['Venus', 'Saturn', 'Mercury'], enemies: ['Sun', 'Moon', 'Mars'] },
+        'Ketu': { friends: ['Mars', 'Venus', 'Saturn'], enemies: ['Sun', 'Moon', 'Mercury'] },
+        'Uranus': { friends: [], enemies: [] },
+        'Neptune': { friends: [], enemies: [] },
+        'Pluto': { friends: [], enemies: [] }
+    };
+
+    // Moolatrikona Ranges (Planet -> Sign Index -> Degree Range)
+    // Sun: Leo(4) 0-20
+    // Moon: Taurus(1) 3-30
+    // Mars: Aries(0) 0-12
+    // Mercury: Virgo(5) 16-20
+    // Jupiter: Sagittarius(8) 0-10 (Some use 0-13, we use 0-10 to match JHora usually)
+    // Venus: Libra(6) 0-10 (Some use 0-15)
+    // Saturn: Aquarius(10) 0-20
+    const MOOLATRIKONA = {
+        'Sun': { sign: 4, start: 0, end: 20 },
+        'Moon': { sign: 1, start: 3, end: 30 },
+        'Mars': { sign: 0, start: 0, end: 12 },
+        'Mercury': { sign: 5, start: 16, end: 20 },
+        'Jupiter': { sign: 8, start: 0, end: 10 },
+        'Venus': { sign: 6, start: 0, end: 10 },
+        'Saturn': { sign: 10, start: 0, end: 20 }
+    };
+
+    /**
+     * Calculate Temporary Relationship (Tatkalik Maitri)
+     * Planet in 2, 3, 4, 10, 11, 12 from source is Friend.
+     * Others (1, 5, 6, 7, 8, 9) are Enemies.
+     */
+    const getTemporaryStatus = (sourcePlanetLong, targetPlanetLong) => {
+        const sourceHouse = Math.floor(sourcePlanetLong / 30);
+        const targetHouse = Math.floor(targetPlanetLong / 30);
+
+        // Calculate house position of target relative to source (1-based)
+        // If same sign, distance is 1.
+        let dist = (targetHouse - sourceHouse + 12) % 12 + 1;
+
+        // 2, 3, 4, 10, 11, 12 are Friends
+        if ([2, 3, 4, 10, 11, 12].includes(dist)) return 'Friend';
+        return 'Enemy';
+    };
+
+    const getDignity = (planet, signIndex, signLord, currentLong, allPlanets) => {
+        // 1. Exaltation / Debilitation
+        const signName = ZODIAC_SIGNS[signIndex];
+        if (EXALTATION[planet] === signName) return 'Exalted';
+        if (DEBILITATION[planet] === signName) return 'Debilitated';
+
+        // 2. Moolatrikona
+        const moola = MOOLATRIKONA[planet];
+        if (moola && moola.sign === signIndex) {
+            const deg = currentLong % 30;
+            if (deg >= moola.start && deg < moola.end) return 'Moolatrikona';
+        }
+
+        // 3. Own Sign
+        // Special case for Rahu/Ketu/Modern
+        if (planet === signLord) return 'Own Sign';
+        if (planet === 'Rahu' && signName === 'Aquarius') return 'Own Sign';
+        if (planet === 'Ketu' && signName === 'Scorpio') return 'Own Sign';
+
+        // 4. Compound Friendship (Pancha-da Maitri)
+        // Need position of the Sign Lord to determine Temporary Friendship
+        if (!allPlanets[signLord]) {
+            // Fallback to Natural Friendship if Sign Lord position unknown (e.g. outer planets lord)
+            const rels = NATURAL_RELATIONSHIPS[planet];
+            if (!rels) return 'Neutral';
+            if (rels.friends.includes(signLord)) return 'Friendly';
+            if (rels.enemies.includes(signLord)) return 'Enemy';
+            return 'Neutral';
+        }
+
+        const lordLong = allPlanets[signLord].longitude;
+        const tempStatus = getTemporaryStatus(currentLong, lordLong); // Friend or Enemy
+
+        const rels = NATURAL_RELATIONSHIPS[planet];
+        let naturalStatus = 'Neutral';
+        if (rels && rels.friends.includes(signLord)) naturalStatus = 'Friend';
+        else if (rels && rels.enemies.includes(signLord)) naturalStatus = 'Enemy';
+
+        // Compound Logic
+        // Nat Friend + Temp Friend = Great Friend (Adhi Mitra)
+        // Nat Friend + Temp Enemy = Neutral (Sama)
+        // Nat Neutral + Temp Friend = Friend (Mitra)
+        // Nat Neutral + Temp Enemy = Enemy (Shatru)
+        // Nat Enemy + Temp Friend = Neutral (Sama)
+        // Nat Enemy + Temp Enemy = Great Enemy (Adhi Shatru)
+
+        let score = 0; // 0=Neutral, 1=Friend, 2=GreatFriend, -1=Enemy, -2=GreatEnemy
+
+        // Base Score from Natural
+        if (naturalStatus === 'Friend') score += 1;
+        if (naturalStatus === 'Enemy') score -= 1;
+
+        // Add Temp Score
+        if (tempStatus === 'Friend') score += 1;
+        if (tempStatus === 'Enemy') score -= 1;
+
+        if (score >= 2) return 'Great Friend';
+        if (score === 1) return 'Friendly';
+        if (score === 0) return 'Neutral';
+        if (score === -1) return 'Enemy';
+        if (score <= -2) return 'Great Enemy'; // Adhi Shatru
+
+        return 'Neutral';
+    };
+
+    // 3. Enrich with Lords, Avastha, Combustion
+    const sunLong = positions['Sun'].longitude;
+
+    Object.keys(positions).forEach(planet => {
+        const data = positions[planet];
+
+        // Sign Lord
+        data.signLord = RASHI_LORDS[data.rashi.index];
+
+        // Nakshatra Lord
+        const nakLordIndex = data.nakshatra.index % 9;
+        data.nakLord = NAK_LORDS_ORDER[nakLordIndex];
+
+        // Combustion Calculations (Classical Vedic Orbs)
+        // Mars: 17°, Mercury: 14° (12° Retro), Jupiter: 11°
+        // Venus: 10° (8° Retro), Saturn: 15°, Moon: 12°
+        if (planet !== 'Sun' && planet !== 'Rahu' && planet !== 'Ketu') {
+            let diff = Math.abs(data.longitude - sunLong);
+            if (diff > 180) diff = 360 - diff;
+
+            let orb = 6; // Default safe orb
+            const isRetro = data.isRetrograde;
+
+            switch (planet) {
+                case 'Moon': orb = 12; break;
+                case 'Mars': orb = 17; break;
+                case 'Mercury': orb = isRetro ? 12 : 14; break;
+                case 'Jupiter': orb = 11; break;
+                case 'Venus': orb = isRetro ? 8 : 10; break;
+                case 'Saturn': orb = 15; break;
+                default: orb = 6; // Outer planets
+            }
+
+            data.isCombust = diff <= orb;
+        } else {
+            data.isCombust = false;
+        }
+
+        // Avastha (State) - Baala, Kumara, Yuva, Vriddha, Mrita
+        // Odd Signs: 0-6 Infant, 6-12 Young, 12-18 Adolescent, 18-24 Old, 24-30 Dead
+        // Even Signs: Reverse
+        const deg = data.rashi.degree;
+        const isOdd = (data.rashi.index % 2) === 0; // Aries(0) is odd-index logic? No. Aries is 1st sign (Odd). Index 0.
+        // Array index 0 = Aries (Odd), 1 = Taurus (Even)
+        const isOddSign = (data.rashi.index % 2) === 0;
+
+        // States: 0=Bala, 1=Kumara, 2=Yuva, 3=Vriddha, 4=Mrita
+        let stateIdx = Math.floor(deg / 6);
+        if (!isOddSign) { // Even sign, reverse order
+            stateIdx = 4 - stateIdx;
+        }
+
+        const states = ['Bala (Infant)', 'Kumara (Young)', 'Yuva (Adult)', 'Vriddha (Old)', 'Mrita (Dead)'];
+        data.avastha = states[stateIdx];
+
+        // DIGNITY CALCULATION (Now requires 2nd pass or passing the whole object)
+        // We have 'positions' object being built. But checks standard planets.
+        // We can call getDignity here passing 'positions' reference. 
+        // Note: positions[signLord] might not be ready if signLord comes later in loop?
+        // Actually, we calculated all 'positions' in step 1 (forEach body...) and step 2 (Rahu/Ketu).
+        // NOW we are in step 3 (enriching). So 'positions' is fully populated with Longitudes. Perfect.
+
+        data.status = getDignity(planet, data.rashi.index, data.signLord, data.longitude, positions);
+    });
 
     return positions;
 }
@@ -678,5 +889,44 @@ export function calculateAvakhada(moonLong) {
         tatva,
         nameAlphabet: alphabet,
         paya
+    };
+}
+
+/**
+ * Creates a planet-like object for the Ascendant (Lagna)
+ */
+export function getAscendantInfo(lagnaLong) {
+    const rashi = getRashiInfo(lagnaLong);
+    const nakshatra = getNakshatraInfo(lagnaLong);
+
+    // Sign Lord
+    const signLord = RASHI_LORDS[rashi.index];
+
+    // Nakshatra Lord
+    const nakLordIndex = nakshatra.index % 9;
+    const nakLord = NAK_LORDS_ORDER[nakLordIndex];
+
+    // Avastha
+    const deg = rashi.degree;
+    const isOddSign = (rashi.index % 2) === 0; // Aries=0 (Odd)
+    let stateIdx = Math.floor(deg / 6);
+    if (!isOddSign) {
+        stateIdx = 4 - stateIdx;
+    }
+    const states = ['Bala (Infant)', 'Kumara (Young)', 'Yuva (Adult)', 'Vriddha (Old)', 'Mrita (Dead)'];
+    const avastha = states[stateIdx];
+
+    return {
+        longitude: lagnaLong,
+        rashi,
+        nakshatra,
+        isRetrograde: false,
+        signLord,
+        nakLord,
+        isCombust: false,
+        avastha,
+        // Detailed fields similar to planets for consistent UI rendering
+        name: 'Ascendant',
+        status: '-'
     };
 }

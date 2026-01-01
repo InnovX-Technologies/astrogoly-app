@@ -16,7 +16,8 @@ import {
     getVargaRashi,
     calculatePanchang,
     calculateMatchmaking,
-    calculateAvakhada
+    calculateAvakhada,
+    getAscendantInfo
 } from './utils/astrology.js';
 import {
     calculateKPCusps,
@@ -42,7 +43,7 @@ const ZODIAC = [
 ];
 
 const vargaConfig = [
-    { key: 'd1', division: 1, name: 'Rashi (D1)' },
+    { key: 'd1', division: 1, name: 'Lagna Chart' },
     { key: 'd2', division: 2, name: 'Hora (D2)' },
     { key: 'd3', division: 3, name: 'Drekkana (D3)' },
     { key: 'd4', division: 4, name: 'Chaturthamsa (D4)' },
@@ -82,9 +83,15 @@ app.post('/api/birth-chart', async (req, res) => {
         }
 
         const ayanamsa = getAyanamsa(birthDateTime);
-        const planets = getPlanetaryPositions(birthDateTime);
+        const rawPlanets = getPlanetaryPositions(birthDateTime);
         const lagnaLong = calculateLagna(birthDateTime, lat, lon);
         const lagnaInfo = getRashiInfo(lagnaLong);
+
+        // Reconstruct planets to ensure Ascendant is first
+        const planets = {
+            Ascendant: getAscendantInfo(lagnaLong),
+            ...rawPlanets
+        };
 
         const dashas = {
             vimshottari: calculateVimshottari(planets.Moon.longitude, birthDateTime),
@@ -212,7 +219,9 @@ function calculateHouses(lagnaRashiIndex, planets, division = 1) {
         houses[houseIndex].planets.push({
             name,
             degree: data.rashi.degree,
-            formattedDegree: data.rashi.formatted
+            degree: data.rashi.degree,
+            formattedDegree: data.rashi.formatted,
+            isRetrograde: data.isRetrograde
         });
     });
 

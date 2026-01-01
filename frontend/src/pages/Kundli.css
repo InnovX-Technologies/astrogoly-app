@@ -26,6 +26,7 @@
     font-weight: 800;
     background: linear-gradient(135deg, var(--primary), var(--accent-gold));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: #000000;
     margin-bottom: 0.75rem;
 }
@@ -406,23 +407,23 @@
 /* Varga Explorer Panel */
 .varga-explorer-panel {
     grid-column: span 12;
-    background: var(--card-bg);
-    border: 1px solid var(--glass-border);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 24px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .explorer-header {
-    padding: 1.5rem 2.5rem;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #f0f0f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: #ffffff;
     flex-wrap: wrap;
 }
 
@@ -467,30 +468,37 @@
 .explorer-content {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
-    min-height: 550px;
+    min-height: auto;
+    /* Allow auto height */
 }
 
+
 .main-chart-card {
-    padding: 3rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--glass-border);
+    justify-content: flex-start;
+    /* Align to top */
     position: relative;
-    background: radial-gradient(circle at center, rgba(212, 175, 55, 0.03), transparent 60%);
+    background: #ffffff;
+    border-right: 1px solid #f0f0f0;
+    gap: 2rem;
 }
 
 .chart-name-display {
-    position: absolute;
-    top: 2rem;
-    left: 2.5rem;
-    color: var(--primary);
-    font-size: 1.4rem;
+    position: relative;
+    /* relative positioning */
+    inset: auto;
+    width: 100%;
+    color: var(--accent-gold);
+    font-size: 1.5rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    opacity: 0.5;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    text-align: center;
+    margin-bottom: 0;
 }
 
 .chart-wrapper {
@@ -511,13 +519,18 @@
 .varga-details {
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    overflow-y: auto;
 }
 
 .varga-details>.result-card {
-    padding: 2rem;
-    border-bottom: 1px solid var(--glass-border);
-    background: transparent;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .panchang-grid,
@@ -529,10 +542,21 @@
 
 .detail-item,
 .planet-mini-row {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--glass-border);
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 0.8rem 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.detail-item:hover,
+.planet-mini-row:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
 }
 
 .detail-item span {
@@ -549,7 +573,7 @@
 }
 
 .p-short-name {
-    color: var(--primary);
+    color: #8f0000;
     font-weight: 800;
     width: 24px;
 }
@@ -561,13 +585,28 @@
 
 .p-mini-sign {
     font-size: 0.85rem;
-    color: #fff;
+    color: #000000;
 }
 
 .p-mini-deg {
     font-size: 0.7rem;
     color: var(--text-muted);
     font-family: monospace;
+}
+
+/* Planetary Details Section */
+.planetary-details-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 0 2rem 2rem 2rem;
+}
+
+.planetary-details-table-card {
+    margin-top: 0 !important;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    background: white;
 }
 
 /* Secondary Charts */
@@ -875,6 +914,7 @@
         padding: 0.75rem 0.875rem;
     }
 }
+
 /* ========================================
    KP SYSTEM STYLES (Jaganath Hora Layout)
    ======================================== */
@@ -1017,7 +1057,7 @@
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
-    
+
     .bhav-chalit-section {
         max-width: 500px;
         margin: 0 auto;
@@ -1028,16 +1068,16 @@
     .kp-system-container {
         padding: 1rem;
     }
-    
+
     .kp-table {
         font-size: 0.75rem;
     }
-    
+
     .kp-table th,
     .kp-table td {
         padding: 0.4rem 0.5rem;
     }
-    
+
     .bhav-chalit-chart {
         padding: 1rem;
     }
@@ -1047,16 +1087,16 @@
     .kp-table {
         font-size: 0.7rem;
     }
-    
+
     .kp-table th,
     .kp-table td {
         padding: 0.3rem 0.4rem;
     }
-    
+
     .kp-section-title {
         font-size: 0.9rem;
     }
-    
+
     .kp-subsection-title {
         font-size: 0.8rem;
     }
