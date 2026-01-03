@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     Star, Heart, Sun, Moon, Shield, Zap,
     Users, BarChart3, Globe, Sparkles,
-    ArrowRight, CheckCircle2, MessageSquare
+    ArrowRight, CheckCircle2, MessageSquare, Search
 } from 'lucide-react';
 import FloatingCTA from '../components/FloatingCTA';
 import TrustBadges from '../components/TrustBadges';
@@ -15,67 +15,103 @@ import './Home.css';
 const Home = () => {
     const [scrolled, setScrolled] = useState(false);
 
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
         };
+
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        // Intersection Observer for Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            observer.disconnect();
+        };
     }, []);
+
+    const toggleLang = (lang) => {
+        // Placeholder for language toggle logic
+        console.log("Language switched to", lang);
+    };
 
     return (
         <div className="home-page">
-            {/* Hero Section */}
-            <section className="hero">
-                <div className="container hero-content">
-                    <div className="hero-badge">
-                        <Sparkles size={14} className="text-gold" />
-                        <span>Most Trusted Astrology Platform of 2024</span>
-                    </div>
-                    <h1>Unlock the Secrets<br /> <span className="text-gradient">of Your Destiny</span></h1>
-                    <p>
-                        Ancient Vedic Wisdom meets modern AI precision. Explore your past, master your present, and manifest your future with the world's most detailed astrological engine.
-                    </p>
-                    <div className="hero-buttons">
-                        <Link to="/kundli" className="btn-primary">
-                            <span>Get Free Kundli</span>
-                            <ArrowRight size={18} />
-                        </Link>
-                        <Link to="/tarot" className="btn-outline">Read Tarot</Link>
+            <div className="portal-container main-grid">
+                {/* --- Left Column: Hero Banner & Content --- */}
+                <div className="main-content">
+                    {/* Hero Banner */}
+                    <div className="hero-banner-wrap">
+                        <div className="hero-bg-pattern"></div>
+                        <h1 className="hero-main-text">aryabhatta se kalam tak -<br />main hoon innovative indian.</h1>
+
+                        {/* Placeholder Figures */}
+                        <div className="hero-figures">
+                            {['Aryabhatta', 'Varahamihira', 'Ramanujan', 'CV Raman', 'Kalam', 'Vivekananda'].map((name, i) => (
+                                <div key={i} className="figure-placeholder" title={name}>
+                                    {name[0]}
+                                </div>
+                            ))}
+                        </div>
+
+                        <button className="know-more-btn">Know More</button>
                     </div>
 
-                    <div className="hero-trust">
-                        <div className="trust-item">
-                            <div className="avatars">
-                                <img src="https://i.pravatar.cc/40?u=1" alt="User" />
-                                <img src="https://i.pravatar.cc/40?u=2" alt="User" />
-                                <img src="https://i.pravatar.cc/40?u=3" alt="User" />
-                            </div>
-                            <span>10,000+ Happy Seekers</span>
+                    {/* Stats or Text below banner */}
+                    <div style={{ marginTop: '2rem' }}>
+                        <TrustBadges />
+                    </div>
+                </div>
+
+                {/* --- Right Column: Sidebar --- */}
+                <div className="sidebar">
+                    {/* Card 1: Brihat Kundli */}
+                    <div className="sidebar-card">
+                        <h3>Buy Brihat Kundli</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#666' }}>250+ Pages of detailed life predictions</p>
+                        <button className="buy-btn">BUY NOW</button>
+                    </div>
+
+                    {/* Card 2: AI Astrologer */}
+                    <div className="sidebar-card">
+                        <h3>AI Astrologers</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#666' }}>World's smartest astrologers available 24/7</p>
+                        <div className="ai-avatar-group">
+                            <img src="https://i.pravatar.cc/100?u=10" alt="Bot 1" />
+                            <img src="https://i.pravatar.cc/100?u=20" alt="Bot 2" />
+                            <img src="https://i.pravatar.cc/100?u=30" alt="Bot 3" />
+                        </div>
+                        <button className="buy-btn" style={{ background: '#ffcc01', color: '#333', marginTop: '1rem' }}>First Chat Free</button>
+                    </div>
+
+                    {/* Card 3: Apps */}
+                    <div className="sidebar-card">
+                        <h3>Astrogoly on Mobile</h3>
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            <div style={{ padding: '0.5rem', background: '#eee', borderRadius: '4px' }}>Android</div>
+                            <div style={{ padding: '0.5rem', background: '#eee', borderRadius: '4px' }}>iOS</div>
                         </div>
                     </div>
                 </div>
-                <div className="hero-visual">
-                    <div className="cosmic-ring"></div>
-                    <div className="cosmic-ring-inner"></div>
-                    <div className="floating-icons">
-                        <Sun className="float-icon sun" size={32} />
-                        <Moon className="float-icon moon" size={28} />
-                        <Star className="float-icon star" size={24} />
-                    </div>
-                </div>
-                <div className="hero-background">
-                    <div className="orb orb-1"></div>
-                    <div className="orb orb-2"></div>
-                    <div className="stars-overlay"></div>
-                </div>
-            </section>
+            </div>
+
 
             {/* Main Services - Chat, Talk, Shop, Pooja */}
             <MainServices />
 
             {/* Stats Section */}
-            <section className="stats-section">
+            <section className="stats-section animate-on-scroll">
                 <div className="container">
                     <div className="stats-grid">
                         <StatItem icon={<BarChart3 />} count="1.2M+" label="Charts Generated" />
@@ -90,7 +126,7 @@ const Home = () => {
             <ComplimentaryServices />
 
             {/* Main Services */}
-            <section className="services container">
+            <section className="services container animate-on-scroll">
                 <div className="section-header">
                     <span className="sub-title">Our Sacred Services</span>
                     <h2>Expert Guidance for Every Path</h2>
@@ -129,41 +165,28 @@ const Home = () => {
             </section>
 
             {/* Why Choose Us */}
-            <section className="why-choose-us">
-                <div className="container choose-grid">
-                    <div className="choose-content">
-                        <span className="sub-title">Why Astrogoly?</span>
-                        <h2>The Science of Stars,<br /> Simplified for You</h2>
-                        <div className="feature-list">
-                            <FeatureItem
-                                icon={<Zap className="text-gold" />}
-                                title="Real-time Calculations"
-                                desc="Our engine uses NASA-grade JPL ephemeris for 99.9% calculation accuracy."
-                            />
-                            <FeatureItem
-                                icon={<Shield className="text-gold" />}
-                                title="Data Privacy"
-                                desc="Your birth details are encrypted and never shared. Your privacy is our priority."
-                            />
-                            <FeatureItem
-                                icon={<MessageSquare className="text-gold" />}
-                                title="AI Insights"
-                                desc="Modern interpretations combined with classical Vedic wisdom for practical advice."
-                            />
-                        </div>
-                    </div>
-                    <div className="choose-image">
-                        <div className="image-wrapper glass-panel">
-                            <img src="https://images.unsplash.com/photo-1532968961962-8a0cb3a2d4f5?auto=format&fit=crop&q=80&w=800" alt="Astrology" />
-                            <div className="floating-card top">
-                                <CheckCircle2 size={16} className="text-green" />
-                                <span>Precise Lagna Calculation</span>
-                            </div>
-                            <div className="floating-card bottom">
-                                <Sparkles size={16} className="text-gold" />
-                                <span>AI Predictions Enabled</span>
-                            </div>
-                        </div>
+            <section className="why-choose-us" style={{ background: 'transparent', textAlign: 'center', paddingTop: '4rem' }}>
+                <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '3rem', fontWeight: '800', color: '#333', marginBottom: '0.5rem' }}>Why Trust Astrogoly?</h2>
+                    <p style={{ fontSize: '1.2rem', color: '#666', marginBottom: '3rem' }}>Your satisfaction and privacy are our top priorities</p>
+
+                    <div className="feature-list" style={{ flexDirection: 'row', gap: '2rem', justifyContent: 'center' }}>
+                        {/* Features preserved but styled for layout */}
+                        <FeatureItem
+                            icon={<Zap className="text-gold" />}
+                            title="Real-time Calculations"
+                            desc="Our engine uses NASA-grade JPL ephemeris for 99.9% calculation accuracy."
+                        />
+                        <FeatureItem
+                            icon={<Shield className="text-gold" />}
+                            title="Data Privacy"
+                            desc="Your birth details are encrypted and never shared. Your privacy is our priority."
+                        />
+                        <FeatureItem
+                            icon={<MessageSquare className="text-gold" />}
+                            title="AI Insights"
+                            desc="Modern interpretations combined with classical Vedic wisdom for practical advice."
+                        />
                     </div>
                 </div>
             </section>

@@ -10,11 +10,20 @@ import Chat from './pages/Chat';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/Toast';
+import backgroundVideo from './assets/Background_vdo.mp4';
 
 function App() {
   return (
     <ToastProvider>
       <ThemeProvider>
+        {/* Global Video Background */}
+        <div className="video-background">
+          <video autoPlay loop muted playsInline>
+            <source src={backgroundVideo} type="video/mp4" />
+          </video>
+          <div className="video-overlay"></div>
+        </div>
+
         <Router>
           <Navbar />
           <Routes>

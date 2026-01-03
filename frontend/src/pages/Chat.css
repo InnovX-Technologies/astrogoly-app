@@ -4,7 +4,7 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    background: radial-gradient(circle at center, var(--bg-dark), #000);
+    /* background: radial-gradient(circle at center, var(--bg-dark), #000); */
 }
 
 .astrologer-list-view {

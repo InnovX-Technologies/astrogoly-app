@@ -57,7 +57,7 @@ const Kundli = () => {
                 longitude: parseFloat(formData.longitude)
             };
 
-            const response = await fetch('http://localhost:3001/api/birth-chart', {
+            const response = await fetch('/api/birth-chart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import * as Astronomy from 'astronomy-engine';
 import Groq from 'groq-sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import {
     getPlanetaryPositions,
@@ -29,10 +30,14 @@ import {
 dotenv.config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Initialize Groq AI (Free & Fast!)
 const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+
+// Initialize Google Gemini (Fallback/Specific Logic)
+const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: "gemini-pro" }) : null;
 
 app.use(cors());
 app.use(express.json());
@@ -332,6 +337,10 @@ app.get('/api/horoscope', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Astrology Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Astrology Server running on port ${PORT}`);
+    });
+}
+
+export default app;

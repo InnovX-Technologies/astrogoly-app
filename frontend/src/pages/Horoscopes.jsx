@@ -52,7 +52,7 @@ const Horoscopes = () => {
             const targetDate = new Date();
             targetDate.setDate(targetDate.getDate() + dayOffset);
 
-            const response = await axios.get(`http://localhost:3001/api/horoscope`, {
+            const response = await axios.get(`/api/horoscope`, {
                 params: {
                     sign: selectedSign.name,
                     date: targetDate.toISOString(),

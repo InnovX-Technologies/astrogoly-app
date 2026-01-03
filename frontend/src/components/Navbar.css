@@ -5,24 +5,22 @@
     width: 100%;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: var(--nav-bg);
-    box-shadow: var(--nav-shadow);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 217, 0, 0.192);
 }
 
 .navbar.scrolled {
-    background: var(--nav-bg);
     backdrop-filter: blur(20px);
-    box-shadow: 0 4px 12px var(--shadow-color);
-    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
     padding: 0.6rem 0;
 }
 
 /* Top Info Bar */
 .top-info-bar {
     height: 40px;
-    background: var(--primary);
-    border-bottom: 1px solid var(--border-light);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(90deg, #b8860b, #ffd700);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.4s;
     overflow: hidden;
     position: relative;
@@ -74,6 +72,13 @@
     padding: 0.6rem 0;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+}
+
 .logo-sparkle-wrapper {
     position: relative;
     width: 44px;
@@ -95,13 +100,13 @@
 .brand-name {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--text-dark);
+    color: #fff;
     letter-spacing: -1px;
 }
 
 .brand-tagline {
     font-size: 0.7rem;
-    color: var(--primary);
+    color: #ffd700;
     text-transform: uppercase;
     letter-spacing: 3px;
     font-weight: 900;
@@ -123,7 +128,7 @@
 
 .nav-links a {
     position: relative;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
@@ -134,7 +139,7 @@
 
 .nav-links a:hover,
 .nav-links a.active {
-    color: var(--text-dark);
+    color: #ffd700;
 }
 
 .link-indicator {
