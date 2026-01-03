@@ -59,7 +59,7 @@ const Navbar = () => {
                         <div className="sparkle-glow"></div>
                     </div>
                     <div className="logo-text">
-                        <span className="brand-name">Astrogoly</span><br></br>
+                        <span className="brand-name">AstroNexa</span><br></br>
                         <span className="brand-tagline">Vedic Wisdom</span>
                     </div>
                 </Link>
@@ -100,7 +100,7 @@ const Navbar = () => {
                     <div className="mobile-menu glass-panel">
                         <div className="mobile-brand">
                             <Sparkles className="text-gold" />
-                            <span>Astrogoly Menu</span>
+                            <span>AstroNexa Menu</span>
                         </div>
                         {navLinks.map((link) => (
                             <Link

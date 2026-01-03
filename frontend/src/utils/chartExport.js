@@ -112,7 +112,7 @@ export const shareKundli = async (elementId, shareData = {}) => {
         if (navigator.share && navigator.canShare({ files: [file] })) {
             await navigator.share({
                 title: shareData.title || 'My Kundli Chart',
-                text: shareData.text || 'Check out my Vedic birth chart from Astrogoly',
+                text: shareData.text || 'Check out my Vedic birth chart from AstroNexa',
                 files: [file]
             });
             return { success: true };

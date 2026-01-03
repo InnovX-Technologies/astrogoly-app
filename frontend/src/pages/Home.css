@@ -55,14 +55,14 @@
 }
 
 /* Hero Banner */
+/* Hero Banner */
 .hero-banner-wrap {
-    background: rgba(0, 31, 63, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.88));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 24px;
     overflow: hidden;
     position: relative;
-    min-height: 400px;
+    min-height: 450px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -70,18 +70,19 @@
     text-align: center;
     padding: 3rem;
     color: white;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 0 50px rgba(255, 215, 0, 0.05);
 }
 
 .hero-main-text {
-    font-size: 3rem;
-    font-weight: 800;
+    font-size: clamp(3rem, 6vw, 4rem);
+    font-weight: 900;
     margin-bottom: 1rem;
     z-index: 2;
-    line-height: 1.2;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    line-height: 1.1;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
     color: #ffd700;
-    /* Gold color */
+    text-transform: uppercase;
+    letter-spacing: -1px;
 }
 
 .hero-figures {

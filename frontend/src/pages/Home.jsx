@@ -54,22 +54,26 @@ const Home = () => {
                     {/* Hero Banner */}
                     <div className="hero-banner-wrap">
                         <div className="hero-bg-pattern"></div>
-                        <h1 className="hero-main-text">aryabhatta se kalam tak -<br />main hoon innovative indian.</h1>
+                        <h1 className="hero-main-text">Unlock Your<br />Cosmic Destiny</h1>
+                        <p className="hero-sub-text">ancient wisdom meets modern ai</p>
 
-                        {/* Placeholder Figures */}
+                        {/* Zodiac Row */}
                         <div className="hero-figures">
-                            {['Aryabhatta', 'Varahamihira', 'Ramanujan', 'CV Raman', 'Kalam', 'Vivekananda'].map((name, i) => (
-                                <div key={i} className="figure-placeholder" title={name}>
-                                    {name[0]}
+                            {['♈', '♉', '♊', '♋', '♌', '♍'].map((sign, i) => (
+                                <div key={i} className="figure-placeholder" style={{ fontFamily: 'Segoe UI Symbol', fontSize: '1.5rem' }}>
+                                    {sign}
                                 </div>
                             ))}
                         </div>
 
-                        <button className="know-more-btn">Know More</button>
+                        <div className="hero-cta-group" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <Link to="/kundli" className="know-more-btn" style={{ textDecoration: 'none' }}>Get Free Kundli</Link>
+                            <Link to="/chat" className="know-more-btn" style={{ background: 'transparent', color: '#ffd700', border: '1px solid #ffd700' }}>Chat With AI</Link>
+                        </div>
                     </div>
 
                     {/* Stats or Text below banner */}
-                    <div style={{ marginTop: '2rem' }}>
+                    <div style={{ marginTop: '3rem', marginBottom: '3rem' }}>
                         <TrustBadges />
                     </div>
                 </div>
@@ -97,10 +101,10 @@ const Home = () => {
 
                     {/* Card 3: Apps */}
                     <div className="sidebar-card">
-                        <h3>Astrogoly on Mobile</h3>
+                        <h3>AstroNexa on Mobile</h3>
                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                            <div style={{ padding: '0.5rem', background: '#eee', borderRadius: '4px' }}>Android</div>
-                            <div style={{ padding: '0.5rem', background: '#eee', borderRadius: '4px' }}>iOS</div>
+                            <div style={{ padding: '0.5rem', background: '#050505ff', borderRadius: '4px' }}>Android</div>
+                            <div style={{ padding: '0.5rem', background: '#050505ff', borderRadius: '4px' }}>iOS</div>
                         </div>
                     </div>
                 </div>
@@ -167,7 +171,7 @@ const Home = () => {
             {/* Why Choose Us */}
             <section className="why-choose-us" style={{ background: 'transparent', textAlign: 'center', paddingTop: '4rem' }}>
                 <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <h2 style={{ fontSize: '3rem', fontWeight: '800', color: '#333', marginBottom: '0.5rem' }}>Why Trust Astrogoly?</h2>
+                    <h2 style={{ fontSize: '3rem', fontWeight: '800', color: '#333', marginBottom: '0.5rem' }}>Why Trust AstroNexa?</h2>
                     <p style={{ fontSize: '1.2rem', color: '#666', marginBottom: '3rem' }}>Your satisfaction and privacy are our top priorities</p>
 
                     <div className="feature-list" style={{ flexDirection: 'row', gap: '2rem', justifyContent: 'center' }}>

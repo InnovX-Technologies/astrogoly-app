@@ -40,7 +40,7 @@ const TrustBadges = () => {
         <section className="trust-badges-section">
             <div className="container">
                 <div className="trust-badges-header">
-                    <h3>Why Trust Astrogoly?</h3>
+                    <h3>Why Trust AstroNexa?</h3>
                     <p>Your satisfaction and privacy are our top priorities</p>
                 </div>
                 <div className="trust-badges-grid">

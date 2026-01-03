@@ -7,14 +7,14 @@ const InTheNews = () => {
             id: 1,
             publication: 'Inc42',
             logo: 'https://via.placeholder.com/120x40/4A90E2/FFFFFF?text=Inc42',
-            headline: 'Astrogoly raises funding for AI-powered astrology',
+            headline: 'AstroNexa raises funding for AI-powered astrology',
             link: '#'
         },
         {
             id: 2,
             publication: 'ET Now',
             logo: 'https://via.placeholder.com/120x40/E74C3C/FFFFFF?text=ET+NOW',
-            headline: 'How Astrogoly is revolutionizing online astrology',
+            headline: 'How AstroNexa is revolutionizing online astrology',
             link: '#'
         },
         {
@@ -37,7 +37,7 @@ const InTheNews = () => {
         <section className="in-the-news-section">
             <div className="container">
                 <div className="section-header">
-                    <h2>Astrogoly in News</h2>
+                    <h2>AstroNexa in News</h2>
                     <p>Featured in leading publications</p>
                 </div>
 
