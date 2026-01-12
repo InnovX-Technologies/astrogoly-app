@@ -181,13 +181,13 @@ app.post('/api/birth-chart', async (req, res) => {
                             - Moon Sign: ${planets.Moon.rashi.name}
                             - Current Mahadasha: ${dashas.vimshottari[0]?.planet}
                             
-                            Provide a concise 3-paragraph life interpretation:
+                            Provide a concise 5-paragraph life interpretation:
                             1. Personality and Core Nature.
                             2. Career and Wealth prospects.
                             3. Spiritual path and major life advice.
                             4. Love Life and Relationship prospects.
                             5. Astrological Remedies.
-                            
+
                             Keep it mystical yet practical.`
                         }
                     ],
