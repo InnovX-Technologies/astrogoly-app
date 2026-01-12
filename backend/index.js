@@ -185,6 +185,8 @@ app.post('/api/birth-chart', async (req, res) => {
                             1. Personality and Core Nature.
                             2. Career and Wealth prospects.
                             3. Spiritual path and major life advice.
+                            4. Love Life and Relationship prospects.
+                            5. Astrological Remedies.
                             
                             Keep it mystical yet practical.`
                         }
