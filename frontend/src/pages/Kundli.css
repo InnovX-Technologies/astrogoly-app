@@ -5,17 +5,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    top: 5rem;
+    position: relative;
     /* Center vertically */
 }
 
 /* Centered Form Container */
 .kundli-form-container {
-    max-width: 600px;
+    max-width: 640px;
     width: 100%;
     margin: 0 auto;
     padding: 2rem 1rem;
-    margin-top: 4rem;
 }
 
 .kundli-header-centered {
@@ -54,7 +55,7 @@
 
 /* Full-Width Results View */
 .kundli-results-view {
-    max-width: 1400px;
+    max-width: 90%;
     width: 100%;
     margin: 0 auto;
     padding: 0 1rem;
@@ -62,6 +63,7 @@
 
 .results-content {
     margin-top: 2rem;
+    margin-bottom: 7rem;
 }
 
 .placeholder-content {
@@ -807,19 +809,19 @@
 
 /* Basic & Avakhada Details Styling - Exact AstroTalk Match */
 .details-comparison-card {
-    padding: 0 !important;
-    background: transparent;
+    padding: 4rem !important;
+    background: var(--card-bg);
     border: none;
-    border-radius: 0;
+    border-radius: 2rem;
     box-shadow: none;
-    max-width: 1200px;
+    max-width: 85%;
     margin: 0 auto;
 }
 
 .details-comparison-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 7rem;
 }
 
 .details-column {

@@ -8,40 +8,76 @@ const astrologers = [
     { id: 3, name: "Divine Divya", specialty: "Vastu, Palmistry", exp: "12 Yrs", rating: 4.8, avatar: "🧕" },
 ];
 
-const mockMessages = [
-    { id: 1, sender: 'bot', text: 'Namaste! Welcome to AstroNexa. How can I guide you today?' },
-];
+
 
 
 const Chat = () => {
     const [selectedAstrologer, setSelectedAstrologer] = useState(null);
-    const [messages, setMessages] = useState(mockMessages);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
 
-    const handleSend = (e) => {
+    // Initial Welcome Message when Astrologer is selected
+    React.useEffect(() => {
+        if (selectedAstrologer) {
+            setMessages([
+                {
+                    id: 1,
+                    sender: 'bot',
+                    text: `Namaste! I am ${selectedAstrologer.name}. How may I guide your path today?`
+                }
+            ]);
+        }
+    }, [selectedAstrologer]);
+
+    const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
 
-        // Add user message
-        const newMsg = { id: Date.now(), sender: 'user', text: input };
-        setMessages(prev => [...prev, newMsg]);
+        // Add user message to UI immediately
+        const userMsg = { id: Date.now(), sender: 'user', text: input };
+        setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsTyping(true);
 
-        // Simulated response
-        setTimeout(() => {
-            const responses = [
-                "I see a strong planetary shift in your 5th house.",
-                "That is a very interesting question. The cards suggest patience.",
-                "Based on your birth time, this period is favorable for career growth.",
-                "Could you share your exact date of birth for clarity?",
-                "The stars indicate a new beginning is approaching."
-            ];
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: randomResponse }]);
+        try {
+            // Prepare history (current messages state = history before this new message)
+            const historyPayload = messages.map(m => ({
+                sender: m.sender,
+                text: m.text
+            }));
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: userMsg.text,
+                    history: historyPayload,
+                    astrologer: selectedAstrologer
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) throw new Error(data.error);
+
+            const botMsg = {
+                id: Date.now() + 1,
+                sender: 'bot',
+                text: data.text
+            };
+            setMessages(prev => [...prev, botMsg]);
+
+        } catch (error) {
+            console.error("Chat Error:", error);
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                sender: 'bot',
+                text: "The cosmic connection is weak right now. Please try again."
+            }]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     return (

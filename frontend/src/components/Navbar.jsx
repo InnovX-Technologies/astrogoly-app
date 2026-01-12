@@ -4,11 +4,17 @@ import { Sparkles, Menu, X, Clock, Sun, Moon, Zap } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import './Navbar.css';
 
+import axios from 'axios';
+
 const Navbar = () => {
     const { isDarkMode, toggleTheme } = useTheme();
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [transitData, setTransitData] = useState({
+        transit: 'Calculated Live...',
+        moon_phase: 'Calculated Live...'
+    });
     const location = useLocation();
 
     useEffect(() => {
@@ -16,6 +22,24 @@ const Navbar = () => {
             setIsScrolled(window.scrollY > 20);
         };
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+
+        // Fetch Live Transit Data
+        const fetchTransit = async () => {
+            try {
+                const res = await axios.get('/api/current-transit');
+                if (res.data) {
+                    setTransitData(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch live transit:", err);
+                setTransitData({
+                    transit: 'Sun in Sagittarius',
+                    moon_phase: 'Waxing Gibbous'
+                });
+            }
+        };
+
+        fetchTransit();
 
         window.addEventListener('scroll', handleScroll);
         return () => {
@@ -40,11 +64,11 @@ const Navbar = () => {
                 <div className="container info-bar-content">
                     <div className="info-item">
                         <Clock size={12} className="text-gold" />
-                        <span>Siderial Transit: Sun in Sagittarius</span>
+                        <span>Sidereal Transit: {transitData.transit}</span>
                     </div>
                     <div className="info-item">
                         <Moon size={12} className="text-gold" />
-                        <span>Moon Phase: Waxing Gibbous</span>
+                        <span>Moon Phase: {transitData.moon_phase}</span>
                     </div>
                     <div className="info-time">
                         {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

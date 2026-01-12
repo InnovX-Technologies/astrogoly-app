@@ -18,7 +18,8 @@ import {
     calculatePanchang,
     calculateMatchmaking,
     calculateAvakhada,
-    getAscendantInfo
+    getAscendantInfo,
+    toSidereal
 } from './utils/astrology.js';
 import {
     calculateKPCusps,
@@ -250,6 +251,82 @@ app.post('/api/matchmaking', async (req, res) => {
     } catch (err) {
         console.error("Matchmaking Error:", err);
         res.status(500).json({ error: "Failed to calculate compatibility" });
+    }
+});
+
+
+app.get('/api/current-transit', (req, res) => {
+    try {
+        const now = new Date();
+        const ayanamsa = getAyanamsa(now);
+
+        // Sun
+        const sunVec = Astronomy.GeoVector('Sun', now, true);
+        const sunTropical = Astronomy.Ecliptic(sunVec).elon;
+        const sunSidereal = toSidereal(sunTropical, ayanamsa);
+        const sunInfo = getRashiInfo(sunSidereal);
+
+        // Moon Phase
+        const moonPhaseAngle = Astronomy.MoonPhase(now); // 0-360
+        // Map 0-360 to phase name
+        let moonPhaseName = "New Moon";
+        if (moonPhaseAngle > 5 && moonPhaseAngle < 85) moonPhaseName = "Waxing Crescent";
+        else if (moonPhaseAngle >= 85 && moonPhaseAngle <= 95) moonPhaseName = "First Quarter";
+        else if (moonPhaseAngle > 95 && moonPhaseAngle < 175) moonPhaseName = "Waxing Gibbous";
+        else if (moonPhaseAngle >= 175 && moonPhaseAngle <= 185) moonPhaseName = "Full Moon";
+        else if (moonPhaseAngle > 185 && moonPhaseAngle < 265) moonPhaseName = "Waning Gibbous";
+        else if (moonPhaseAngle >= 265 && moonPhaseAngle <= 275) moonPhaseName = "Last Quarter";
+        else if (moonPhaseAngle > 275 && moonPhaseAngle < 355) moonPhaseName = "Waning Crescent";
+
+        res.json({
+            transit: `Sun in ${sunInfo.name}`,
+            moon_phase: moonPhaseName
+        });
+    } catch (err) {
+        console.error("Current Transit Error:", err);
+        res.status(500).json({ error: "Failed to calculate current transit" });
+    }
+});
+
+app.post('/api/chat', async (req, res) => {
+    try {
+        const { message, history, astrologer } = req.body;
+
+        if (!model) {
+            return res.json({ text: "The stars are silent right now. (AI Configuration Error)" });
+        }
+
+        // Convert frontend history to Gemini format
+        const chatHistory = (history || []).map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+        }));
+
+        const chatSession = model.startChat({
+            history: chatHistory,
+            generationConfig: {
+                maxOutputTokens: 400,
+            },
+        });
+
+        // Contextual Prompt
+        const prompt = `
+            Act as ${astrologer?.name || "Acharya Vani"}, a wise and empathetic astrologer specializing in ${astrologer?.specialty || "Vedic Astrology"}.
+            Your tone should be mystical, soothing, yet practical and solution-oriented.
+            Don't give generic advice; try to sound authentic.
+            
+            User's Query: ${message}
+        `;
+
+        const result = await chatSession.sendMessage(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        res.json({ text });
+
+    } catch (err) {
+        console.error("Chat API Error:", err);
+        res.status(500).json({ error: "Failed to connect with the astrologer." });
     }
 });
 

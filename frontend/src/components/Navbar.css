@@ -18,7 +18,7 @@
 
 /* Top Info Bar */
 .top-info-bar {
-    height: 40px;
+    height: 20px;
     background: linear-gradient(90deg, #b8860b, #ffd700);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.4s;

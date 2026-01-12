@@ -51,9 +51,9 @@ const Footer = () => {
                     <div className="link-group">
                         <h3>Contact Info</h3>
                         <ul className="contact-list">
-                            <li><Mail size={16} /> <span>support@astronexa.com</span></li>
-                            <li><Phone size={16} /> <span>+1 (555) 123-STAR</span></li>
-                            <li><MapPin size={16} /> <span>Cosmic Towers, Mumbai, IN</span></li>
+                            <li><Mail size={16} /> <span>contact@innovxtechnologies.com</span></li>
+                            <li><Phone size={16} /> <span>+91 9876543210</span></li>
+                            <li><MapPin size={16} /> <span>Pune, Maharashtra, IN</span></li>
                         </ul>
                     </div>
                 </div>
@@ -61,7 +61,7 @@ const Footer = () => {
 
             <div className="footer-bottom">
                 <div className="container b-content">
-                    <p>© 2025 AstroNexa. All rights reserved to InnovX Technologies.</p>
+                    <p>© 2026 AstroNexa. All rights reserved to InnovX Technologies.</p>
                     <div className="b-links">
                         <a href="#">Privacy Policy</a>
                         <a href="#">Terms of Service</a>
