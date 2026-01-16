@@ -191,7 +191,7 @@ app.post('/api/birth-chart', async (req, res) => {
                             Keep it mystical yet practical.`
                         }
                     ],
-                    model: "llama-3.3-70b-versatile", // Free, fast, and powerful
+                    model: "llama-3.3-70b-versatile",
                     temperature: 0.7,
                     max_tokens: 500
                 });
